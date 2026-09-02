@@ -371,6 +371,7 @@ const bootstrap: Bootstrap = {
 // a per-app update: sample data only, never shipped.
 let selfUpdate: SelfUpdateInfo = {
   available: true,
+  configured: true,
   current: bootstrap.version,
   latest: "0.2.0",
   publishedAt: ago(60 * 24),

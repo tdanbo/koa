@@ -67,7 +67,7 @@ func TestCheckSelfUpdateSkipsDevBuilds(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CheckSelfUpdate: %v", err)
 	}
-	if info.Available {
+	if info.Available || info.Configured {
 		t.Errorf("a dev build should never report a self-update: %+v", info)
 	}
 }
@@ -90,8 +90,8 @@ func TestCheckSelfUpdateSkipsWhenNoRepoConfigured(t *testing.T) {
 	if err != nil {
 		t.Fatalf("CheckSelfUpdate: %v", err)
 	}
-	if info.Available {
-		t.Errorf("no self-update repo configured, want Available=false, got %+v", info)
+	if info.Available || info.Configured {
+		t.Errorf("no self-update repo configured, want Available=false and Configured=false, got %+v", info)
 	}
 }
 
@@ -109,6 +109,9 @@ func TestCheckSelfUpdateDetectsNewerRelease(t *testing.T) {
 	}
 	if !info.Available {
 		t.Fatalf("want an update available, got %+v", info)
+	}
+	if !info.Configured {
+		t.Errorf("a running check should always be Configured, got %+v", info)
 	}
 	if info.Latest != "v1.2.3" {
 		t.Errorf("latest = %q", info.Latest)
@@ -138,6 +141,9 @@ func TestCheckSelfUpdateUpToDate(t *testing.T) {
 	if info.Available {
 		t.Errorf("running version matches latest tag, want Available=false, got %+v", info)
 	}
+	if !info.Configured {
+		t.Errorf("a repo with a matching latest release is still a Configured check, got %+v", info)
+	}
 }
 
 func TestCheckSelfUpdateNoReleasesYet(t *testing.T) {
@@ -151,6 +157,9 @@ func TestCheckSelfUpdateNoReleasesYet(t *testing.T) {
 	}
 	if info.Available {
 		t.Errorf("a repo with no releases should never report an update: %+v", info)
+	}
+	if !info.Configured {
+		t.Errorf("a repo with no releases yet is still a Configured check, got %+v", info)
 	}
 }
 
