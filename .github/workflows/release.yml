@@ -8,12 +8,23 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+  # Lets tag-release.yml build and publish directly after tagging, without
+  # relying on that tag push re-triggering this workflow — pushes made with
+  # the default GITHUB_TOKEN deliberately don't cascade into other workflow
+  # runs, so the push-tags trigger above never fires for an automated tag.
+  workflow_call:
+    inputs:
+      tag:
+        required: false
+        type: string
 
 permissions:
   contents: write
 
 jobs:
   build:
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
     strategy:
       fail-fast: false
       matrix:
@@ -29,6 +40,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - uses: actions/setup-go@v5
         with:
@@ -51,7 +64,8 @@ jobs:
         id: version
         shell: bash
         run: |
-          tag="${GITHUB_REF_NAME}"
+          tag="${{ inputs.tag }}"
+          if [ -z "$tag" ]; then tag="${GITHUB_REF_NAME}"; fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
           # The asset version segment drops the leading v, matching the
           # convention's examples.
@@ -98,7 +112,7 @@ jobs:
   publish:
     needs: build
     runs-on: ubuntu-latest
-    if: startsWith(github.ref, 'refs/tags/')
+    if: needs.build.outputs.tag != ''
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -108,6 +122,7 @@ jobs:
       - name: Attach assets to the release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ needs.build.outputs.tag }}
           files: |
             dist/*.tar.gz
             dist/*.zip
