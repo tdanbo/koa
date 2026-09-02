@@ -149,7 +149,7 @@ func (s *Service) selfUpdateTo(ctx context.Context, execPath string) error {
 	emit("relaunching", 0, 0, "")
 
 	if err := relaunch(execPath); err != nil {
-		emit("failed", 0, 0, fmt.Sprintf("updated to %s but could not restart automatically — start koa again: %v", result.Tag, err))
+		emit("failed", 0, 0, fmt.Sprintf("updated to %s but could not restart automatically — start Koa again: %v", result.Tag, err))
 		return nil
 	}
 
@@ -168,7 +168,7 @@ func (s *Service) selfUpdateTo(ctx context.Context, execPath string) error {
 func selfExecutablePath() (string, error) {
 	p, err := os.Executable()
 	if err != nil {
-		return "", fmt.Errorf("locate the running koa binary: %w", err)
+		return "", fmt.Errorf("locate the running Koa binary: %w", err)
 	}
 	if resolved, err := filepath.EvalSymlinks(p); err == nil {
 		return resolved, nil

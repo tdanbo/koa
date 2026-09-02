@@ -16,7 +16,7 @@ import (
 // EventAuth when the attempt resolves (PRD §7).
 func (s *Service) SignInWithGitHub() (SignInPrompt, error) {
 	if s.device.ClientID == "" {
-		return SignInPrompt{}, errors.New("this build of koa has no GitHub OAuth client ID — set KOA_GITHUB_CLIENT_ID or use Settings › Enter token")
+		return SignInPrompt{}, errors.New("this build of Koa has no GitHub OAuth client ID — set KOA_GITHUB_CLIENT_ID or use Settings › Enter token")
 	}
 
 	s.CancelSignIn()

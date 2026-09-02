@@ -30,17 +30,21 @@ func main() {
 		glyph color.NRGBA
 		frame color.NRGBA
 		fill  color.NRGBA
+		// weight scales the glyph stroke. Tray icons render very small (often
+		// downscaled further by the OS), so they need a bolder stroke than the
+		// app icon to stay legible against a busy tray background.
+		weight float64
 	}{
 		// Tray, light glyph: for dark tray backgrounds.
-		{"build/tray-dark.png", 32, nrgba(0xdc, 0xde, 0xdb, 0xff), nrgba(0xdc, 0xde, 0xdb, 0x8c), transparent()},
+		{"build/tray-dark.png", 32, nrgba(0xdc, 0xde, 0xdb, 0xff), nrgba(0xdc, 0xde, 0xdb, 0x8c), transparent(), 1.6},
 		// Tray, dark glyph: for light tray backgrounds.
-		{"build/tray-light.png", 32, nrgba(0x24, 0x28, 0x26, 0xff), nrgba(0x24, 0x28, 0x26, 0x8c), transparent()},
+		{"build/tray-light.png", 32, nrgba(0x24, 0x28, 0x26, 0xff), nrgba(0x24, 0x28, 0x26, 0x8c), transparent(), 1.6},
 		// Application icon: the monogram on koa's own window surface.
-		{"build/appicon.png", 512, nrgba(0xdc, 0xde, 0xdb, 0xff), nrgba(0xff, 0xff, 0xff, 0x2e), nrgba(0x16, 0x18, 0x19, 0xff)},
+		{"build/appicon.png", 512, nrgba(0xdc, 0xde, 0xdb, 0xff), nrgba(0xff, 0xff, 0xff, 0x2e), nrgba(0x16, 0x18, 0x19, 0xff), 1.0},
 	}
 
 	for _, out := range outputs {
-		img := render(out.size, out.glyph, out.frame, out.fill)
+		img := render(out.size, out.glyph, out.frame, out.fill, out.weight)
 		if err := writePNG(out.path, img); err != nil {
 			fail(err)
 		}
@@ -69,15 +73,17 @@ func nrgba(r, g, b, a uint8) color.NRGBA { return color.NRGBA{R: r, G: g, B: b, 
 func transparent() color.NRGBA           { return color.NRGBA{} }
 
 // render draws the boxed "K" at the given size. The geometry is expressed in a
-// 32-unit grid and scaled up, so every variant is the same shape.
-func render(size int, glyph, frame, fill color.NRGBA) *image.NRGBA {
+// 32-unit grid and scaled up, so every variant is the same shape. weight
+// scales the glyph stroke independently of the frame, for variants (like the
+// tray icon) that need a bolder glyph to stay legible when small.
+func render(size int, glyph, frame, fill color.NRGBA, weight float64) *image.NRGBA {
 	img := image.NewNRGBA(image.Rect(0, 0, size, size))
 	if fill.A > 0 {
 		draw.Draw(img, img.Bounds(), &image.Uniform{fill}, image.Point{}, draw.Src)
 	}
 
 	unit := float64(size) / 32
-	stroke := unit * 2.6
+	stroke := unit * 2.6 * weight
 	if stroke < 1 {
 		stroke = 1
 	}

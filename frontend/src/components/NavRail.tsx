@@ -35,7 +35,7 @@ export function NavRail() {
           K
         </div>
         {collapsed ? null : (
-          <span className="text-brand font-medium text-title">koa</span>
+          <span className="text-brand font-medium text-title">Koa</span>
         )}
       </div>
 
@@ -76,7 +76,7 @@ export function NavRail() {
           trailing={
             selfUpdate.available ? (
               <span
-                title={`koa ${selfUpdate.latest} is available`}
+                title={`Koa ${selfUpdate.latest} is available`}
                 className="size-[5px] rounded-full bg-amber"
               />
             ) : null

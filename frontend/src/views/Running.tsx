@@ -35,7 +35,7 @@ export function RunningView() {
           title="Nothing running"
           action={<Button onClick={actions.goInstalled}>Open Installed</Button>}
         >
-          Launching an app from koa streams its output here instead of opening a
+          Launching an app from Koa streams its output here instead of opening a
           terminal window.
         </EmptyState>
       </div>

@@ -12,7 +12,7 @@ export function TitleBar() {
         <div className="flex size-[13px] items-center justify-center border border-edge-hover text-[8px] font-semibold text-dim">
           K
         </div>
-        <span className="text-meta tracking-[0.01em] text-dim">koa</span>
+        <span className="text-meta tracking-[0.01em] text-dim">Koa</span>
       </div>
 
       <div className="flex items-stretch">

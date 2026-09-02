@@ -31,7 +31,7 @@ func (s *Service) Launch(owner, name string) (Process, error) {
 		binary = s.paths.BinaryPath(name)
 	}
 	if _, err := os.Stat(binary); err != nil {
-		return Process{}, fmt.Errorf("%s is missing from your koa bin folder — reinstall it", name)
+		return Process{}, fmt.Errorf("%s is missing from your Koa bin folder — reinstall it", name)
 	}
 
 	proc, err := s.procs.Launch(runner.Spec{
