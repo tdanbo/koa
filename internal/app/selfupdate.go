@@ -20,7 +20,12 @@ const selfUpdateCheckInterval = 6 * time.Hour
 
 // SelfUpdateInfo is what the frontend shows when a newer koa release exists.
 type SelfUpdateInfo struct {
-	Available   bool   `json:"available"`
+	Available bool `json:"available"`
+	// Configured is false for a build with no self-update target (a plain
+	// local build, or one missing SelfUpdateRepo/version at link time) — the
+	// UI needs this to tell "checked, you're current" apart from "this build
+	// can't check at all," which otherwise look identical.
+	Configured  bool   `json:"configured"`
 	Current     string `json:"current"`
 	Latest      string `json:"latest"`
 	PublishedAt string `json:"publishedAt"`
@@ -52,6 +57,7 @@ func (s *Service) checkSelfUpdate(ctx context.Context) (SelfUpdateInfo, error) {
 		s.setSelfUpdateInfo(info)
 		return info, nil
 	}
+	info.Configured = true
 
 	release, err := s.gh.LatestRelease(ctx, s.selfUpdateOwner, s.selfUpdateName)
 	if err != nil {
@@ -145,7 +151,7 @@ func (s *Service) selfUpdateTo(ctx context.Context, execPath string) error {
 		return errors.New(msg)
 	}
 
-	s.setSelfUpdateInfo(SelfUpdateInfo{Current: result.Tag})
+	s.setSelfUpdateInfo(SelfUpdateInfo{Current: result.Tag, Configured: true})
 	emit("relaunching", 0, 0, "")
 
 	if err := relaunch(execPath); err != nil {

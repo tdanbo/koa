@@ -208,9 +208,11 @@ export function SettingsView() {
               Koa <Mono>{boot?.version}</Mono>
             </div>
             <div className="mt-1 text-control text-label">
-              {selfUpdate.available
-                ? `${selfUpdate.latest} is available.`
-                : "You're up to date."}
+              {!selfUpdate.configured
+                ? "This build can't check its own updates."
+                : selfUpdate.available
+                  ? `${selfUpdate.latest} is available.`
+                  : "You're up to date."}
             </div>
           </div>
           <LinkButton onClick={() => void actions.checkSelfUpdate()}>

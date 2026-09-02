@@ -121,6 +121,7 @@ const emptySettings: Settings = {
 
 const emptySelfUpdate: SelfUpdateInfo = {
   available: false,
+  configured: false,
   current: "",
   latest: "",
   publishedAt: "",
@@ -762,8 +763,19 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         try {
           const info = await koa.checkSelfUpdate();
           dispatch({ type: "selfUpdateInfo", info });
-        } catch {
-          // Best-effort: koa's own update check never blocks anything else.
+          if (!info.configured) {
+            notify({
+              kind: "warning",
+              message: "This build of Koa has no self-update target configured.",
+            });
+          } else {
+            notify({
+              kind: info.available ? "info" : "success",
+              message: info.available ? `Koa ${info.latest} is available.` : "Koa is up to date.",
+            });
+          }
+        } catch (err) {
+          notify({ kind: "error", message: `Could not check for updates: ${errorMessage(err)}` });
         }
       },
 

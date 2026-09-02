@@ -186,6 +186,8 @@ export interface Toast {
 
 export interface SelfUpdateInfo {
   available: boolean;
+  /** false for a build with no self-update target configured at all. */
+  configured: boolean;
   current: string;
   latest: string;
   publishedAt: string;
