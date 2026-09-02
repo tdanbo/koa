@@ -1,0 +1,111 @@
+# Builds koa for Linux and Windows and attaches the assets to the release,
+# named exactly as koa's own convention requires (see README, §9). This is what
+# makes `install.sh` and koa's Discover view able to install koa itself.
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            goos: linux
+            archive: tar.gz
+          - os: windows-latest
+            goos: windows
+            archive: zip
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.24"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Linux build dependencies
+        if: matrix.goos == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libgtk-3-dev libwebkit2gtk-4.1-dev
+
+      - name: Install Wails
+        run: go install github.com/wailsapp/wails/v2/cmd/wails@v2.15.0
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          tag="${GITHUB_REF_NAME}"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          # The asset version segment drops the leading v, matching the
+          # convention's examples.
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build
+        shell: bash
+        env:
+          KOA_GITHUB_CLIENT_ID: ${{ vars.KOA_GITHUB_CLIENT_ID }}
+        run: |
+          tags=""
+          if [ "${{ matrix.goos }}" = "linux" ]; then tags="-tags webkit2_41"; fi
+          wails build $tags -clean \
+            -ldflags "-X main.version=${{ steps.version.outputs.tag }} -X main.githubClientID=${KOA_GITHUB_CLIENT_ID}"
+
+      - name: Package (linux)
+        if: matrix.goos == 'linux'
+        run: |
+          name="koa-${{ steps.version.outputs.version }}-amd64-linux"
+          mkdir -p "dist/$name"
+          cp build/bin/koa "dist/$name/koa"
+          cp README.md LICENSE "dist/$name/" 2>/dev/null || cp README.md "dist/$name/"
+          tar -czf "dist/$name.tar.gz" -C dist "$name"
+
+      - name: Package (windows)
+        if: matrix.goos == 'windows'
+        shell: pwsh
+        run: |
+          $name = "koa-${{ steps.version.outputs.version }}-amd64-windows"
+          New-Item -ItemType Directory -Force -Path "dist/$name" | Out-Null
+          Copy-Item build/bin/koa.exe "dist/$name/koa.exe"
+          Copy-Item README.md "dist/$name/"
+          Compress-Archive -Path "dist/$name/*" -DestinationPath "dist/$name.zip"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: koa-${{ matrix.goos }}
+          path: |
+            dist/*.tar.gz
+            dist/*.zip
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Attach assets to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/*.zip

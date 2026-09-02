@@ -1,0 +1,14 @@
+{
+  "$schema": "https://wails.io/schemas/config.v2.json",
+  "name": "koa",
+  "outputfilename": "koa",
+  "frontend:install": "npm install",
+  "frontend:build": "npm run build",
+  "frontend:dev:watcher": "npm run dev",
+  "frontend:dev:serverUrl": "auto",
+  "info": {
+    "productName": "koa",
+    "productVersion": "0.1.0",
+    "comments": "Install, update and launch binaries published as GitHub releases."
+  }
+}

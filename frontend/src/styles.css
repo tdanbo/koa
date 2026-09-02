@@ -1,0 +1,471 @@
+@import "tailwindcss";
+
+@import "@fontsource/ibm-plex-sans/400.css";
+@import "@fontsource/ibm-plex-sans/500.css";
+@import "@fontsource/ibm-plex-sans/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+
+/* Class-based dark mode, as required by PRD §15. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Palette
+   ---------------------------------------------------------------------------
+   `:root` is the light theme derived per PRD §5.5: the neutral ramp inverted,
+   geometry and accent roles unchanged, accent lightness adjusted to hold
+   contrast on light surfaces. `.dark` carries the values transcribed from
+   PRD/UI/koa.dc.html, which is the normative source for the dark theme.
+--------------------------------------------------------------------------- */
+
+:root {
+  /* Surfaces — window frame darkest, cards lightest, same stacking as dark. */
+  --k-window: #e5e7e3;
+  --k-titlebar: #e9ebe7;
+  --k-content: #f1f2ef;
+  --k-panel: #fbfcfa;
+  --k-hover: #f3f4f1;
+  --k-inset: rgba(0, 0, 0, 0.03);
+  --k-subtle: rgba(0, 0, 0, 0.022);
+
+  /* Text ramp */
+  --k-text-strong: #1b1e1c;
+  --k-text-title: #232725;
+  --k-text-body: #2d312e;
+  --k-text-primary: #3c423e;
+  --k-text-secondary: #4c534e;
+  --k-text-tertiary: #566059;
+  --k-text-muted: #6a716c;
+  --k-text-dim: #767d78;
+  --k-text-faded: #808781;
+  --k-text-label: #8b918c;
+  --k-text-faint: #9ea4a0;
+  --k-text-fainter: #adb3ae;
+  --k-text-ghost: #c0c5c1;
+
+  /* Borders — the reference uses borders instead of shadows throughout. */
+  --k-border-subtle: rgba(0, 0, 0, 0.08);
+  --k-border-card: rgba(0, 0, 0, 0.09);
+  --k-border-control: rgba(0, 0, 0, 0.12);
+  --k-border-strong: rgba(0, 0, 0, 0.15);
+  --k-border-hover: rgba(0, 0, 0, 0.18);
+
+  /* Interactive washes */
+  --k-wash-soft: rgba(0, 0, 0, 0.035);
+  --k-wash: rgba(0, 0, 0, 0.05);
+  --k-wash-strong: rgba(0, 0, 0, 0.07);
+
+  /* Sage — installed, current, active, primary action, success */
+  --k-sage: #4c6a56;
+  --k-sage-mid: #3f5c49;
+  --k-sage-strong: #35513f;
+  --k-sage-dot: #55765f;
+  --k-sage-knob: #f7faf8;
+  --k-sage-fill: rgba(76, 106, 86, 0.1);
+  --k-sage-fill-hover: rgba(76, 106, 86, 0.18);
+  --k-sage-border: rgba(76, 106, 86, 0.34);
+  --k-sage-track: rgba(76, 106, 86, 0.55);
+
+  /* Amber — update available, warnings, incompatible */
+  --k-amber: #7d6229;
+  --k-amber-strong: #6a521f;
+  --k-amber-soft: #6f5b33;
+  --k-amber-fill: rgba(125, 98, 41, 0.08);
+  --k-amber-border: rgba(125, 98, 41, 0.28);
+  --k-amber-hover: rgba(125, 98, 41, 0.14);
+
+  /* Clay — destructive */
+  --k-clay: #8c4941;
+  --k-clay-strong: #77382f;
+  --k-clay-border: rgba(140, 73, 65, 0.34);
+  --k-clay-fill: rgba(140, 73, 65, 0.1);
+
+  --k-close: #b1443c;
+  --k-close-glyph: #ffffff;
+  --k-focus: #4c6a56;
+}
+
+.dark {
+  --k-window: #0d0e0f;
+  --k-titlebar: #101213;
+  --k-content: #131516;
+  --k-panel: #161819;
+  --k-hover: #191c1d;
+  --k-inset: rgba(255, 255, 255, 0.025);
+  --k-subtle: rgba(255, 255, 255, 0.022);
+
+  --k-text-strong: #e3e5e2;
+  --k-text-title: #dcdedb;
+  --k-text-body: #d7d9d6;
+  --k-text-primary: #c2c7c3;
+  --k-text-secondary: #b0b5b1;
+  --k-text-tertiary: #a9aeaa;
+  --k-text-muted: #868c88;
+  --k-text-dim: #7c837f;
+  --k-text-faded: #767c78;
+  --k-text-label: #5f6663;
+  --k-text-faint: #4f5552;
+  --k-text-fainter: #454b48;
+  --k-text-ghost: #3f4643;
+
+  --k-border-subtle: rgba(255, 255, 255, 0.06);
+  --k-border-card: rgba(255, 255, 255, 0.07);
+  --k-border-control: rgba(255, 255, 255, 0.09);
+  --k-border-strong: rgba(255, 255, 255, 0.11);
+  --k-border-hover: rgba(255, 255, 255, 0.12);
+
+  --k-wash-soft: rgba(255, 255, 255, 0.045);
+  --k-wash: rgba(255, 255, 255, 0.05);
+  --k-wash-strong: rgba(255, 255, 255, 0.07);
+
+  --k-sage: #8fa896;
+  --k-sage-mid: #9db0a4;
+  --k-sage-strong: #b3c4b8;
+  --k-sage-dot: #7f9a86;
+  --k-sage-knob: #a6bcae;
+  --k-sage-fill: rgba(158, 178, 164, 0.1);
+  --k-sage-fill-hover: rgba(158, 178, 164, 0.17);
+  --k-sage-border: rgba(158, 178, 164, 0.28);
+  --k-sage-track: rgba(143, 168, 150, 0.3);
+
+  --k-amber: #b8a179;
+  --k-amber-strong: #c8b287;
+  --k-amber-soft: #a9a08b;
+  --k-amber-fill: rgba(183, 161, 121, 0.06);
+  --k-amber-border: rgba(183, 161, 121, 0.22);
+  --k-amber-hover: rgba(183, 161, 121, 0.12);
+
+  --k-clay: #a8837e;
+  --k-clay-strong: #bb928c;
+  --k-clay-border: rgba(168, 131, 126, 0.28);
+  --k-clay-fill: rgba(168, 131, 126, 0.1);
+
+  --k-close: #8a3a35;
+  --k-close-glyph: #e6e8e5;
+  --k-focus: #9db0a4;
+}
+
+/* ---------------------------------------------------------------------------
+   Theme tokens
+--------------------------------------------------------------------------- */
+
+@theme inline {
+  --color-window: var(--k-window);
+  --color-titlebar: var(--k-titlebar);
+  --color-content: var(--k-content);
+  --color-panel: var(--k-panel);
+  --color-hover: var(--k-hover);
+  --color-inset: var(--k-inset);
+  --color-subtle: var(--k-subtle);
+
+  --color-strong: var(--k-text-strong);
+  --color-title: var(--k-text-title);
+  --color-body: var(--k-text-body);
+  --color-primary: var(--k-text-primary);
+  --color-secondary: var(--k-text-secondary);
+  --color-tertiary: var(--k-text-tertiary);
+  --color-muted: var(--k-text-muted);
+  --color-dim: var(--k-text-dim);
+  --color-faded: var(--k-text-faded);
+  --color-label: var(--k-text-label);
+  --color-faint: var(--k-text-faint);
+  --color-fainter: var(--k-text-fainter);
+  --color-ghost: var(--k-text-ghost);
+
+  --color-edge: var(--k-border-subtle);
+  --color-edge-card: var(--k-border-card);
+  --color-edge-control: var(--k-border-control);
+  --color-edge-strong: var(--k-border-strong);
+  --color-edge-hover: var(--k-border-hover);
+
+  --color-wash-soft: var(--k-wash-soft);
+  --color-wash: var(--k-wash);
+  --color-wash-strong: var(--k-wash-strong);
+
+  --color-sage: var(--k-sage);
+  --color-sage-mid: var(--k-sage-mid);
+  --color-sage-strong: var(--k-sage-strong);
+  --color-sage-dot: var(--k-sage-dot);
+  --color-sage-knob: var(--k-sage-knob);
+  --color-sage-fill: var(--k-sage-fill);
+  --color-sage-fill-hover: var(--k-sage-fill-hover);
+  --color-sage-border: var(--k-sage-border);
+  --color-sage-track: var(--k-sage-track);
+
+  --color-amber: var(--k-amber);
+  --color-amber-strong: var(--k-amber-strong);
+  --color-amber-soft: var(--k-amber-soft);
+  --color-amber-fill: var(--k-amber-fill);
+  --color-amber-border: var(--k-amber-border);
+  --color-amber-hover: var(--k-amber-hover);
+
+  --color-clay: var(--k-clay);
+  --color-clay-strong: var(--k-clay-strong);
+  --color-clay-border: var(--k-clay-border);
+  --color-clay-fill: var(--k-clay-fill);
+
+  --color-close: var(--k-close);
+  --color-close-glyph: var(--k-close-glyph);
+  --color-focus: var(--k-focus);
+
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  /* The reference's type scale, small and tight. */
+  --text-micro: 10px;
+  /* `tag` rather than `label`: --color-label exists, and Tailwind would not
+     know which namespace a bare `text-label` meant. */
+  --text-tag: 10.5px;
+  --text-badge: 11px;
+  --text-meta: 11.5px;
+  --text-control: 12px;
+  --text-copy: 12.5px;
+  --text-value: 13px;
+  --text-brand: 14px;
+  --text-row: 14.5px;
+  --text-head: 15px;
+  --text-sub: 16px;
+  --text-display: 20px;
+
+  /* Shell geometry from PRD §5.2. */
+  --spacing-titlebar: 32px;
+  --spacing-band: 56px;
+  --spacing-footer: 52px;
+  --spacing-rail: 206px;
+  /* The icon-only rail below the collapse breakpoint (src/lib/media.ts). */
+  --spacing-rail-tight: 58px;
+  --spacing-action: 82px;
+  --spacing-fact: 190px;
+  --spacing-gutter: 74px;
+  --spacing-filter: 230px;
+  --spacing-chrome: 46px;
+
+  /* Square corners throughout; radius appears only on avatars and toggles. */
+  --radius-none: 0px;
+
+  --animate-koa-pulse: koaPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes koaPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Base
+--------------------------------------------------------------------------- */
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--k-window);
+    color: var(--k-text-body);
+    font-family: var(--font-sans);
+    font-size: var(--text-copy);
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    /* The webview must never select UI chrome like a document. */
+    user-select: none;
+    cursor: default;
+  }
+
+  ::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--k-border-control);
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  button,
+  input {
+    font-family: inherit;
+    font-size: inherit;
+    color: inherit;
+  }
+
+  input {
+    user-select: text;
+  }
+
+  /* PRD §5.5: the reference removes focus outlines without a replacement.
+     A visible, non-layout-shifting indicator is supplied instead. */
+  :focus {
+    outline: none;
+  }
+  :focus-visible {
+    outline: 1px solid var(--k-focus);
+    outline-offset: 1px;
+  }
+}
+
+@layer utilities {
+  /* Wails uses this custom property to mark draggable window chrome. */
+  .drag-window {
+    --wails-draggable: drag;
+  }
+  .no-drag {
+    --wails-draggable: no-drag;
+  }
+  .select-text-content,
+  .select-text-content * {
+    user-select: text;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Rendered readme
+   ---------------------------------------------------------------------------
+   Matches the Readme card in the reference: 13px prose at 1.7, mono inline
+   code on a barely-tinted inset, square corners, no shadows.
+--------------------------------------------------------------------------- */
+
+.koa-md {
+  font-size: var(--text-value);
+  line-height: 1.7;
+  color: var(--k-text-muted);
+  max-width: 70ch;
+  text-wrap: pretty;
+  user-select: text;
+}
+
+.koa-md > *:first-child {
+  margin-top: 0;
+}
+.koa-md > *:last-child {
+  margin-bottom: 0;
+}
+
+.koa-md h1,
+.koa-md h2,
+.koa-md h3,
+.koa-md h4,
+.koa-md h5,
+.koa-md h6 {
+  color: var(--k-text-title);
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  margin: 26px 0 10px;
+  line-height: 1.35;
+}
+.koa-md h1 {
+  font-size: var(--text-sub);
+}
+.koa-md h2 {
+  font-size: 15px;
+}
+.koa-md h3,
+.koa-md h4,
+.koa-md h5,
+.koa-md h6 {
+  font-size: var(--text-value);
+  color: var(--k-text-secondary);
+}
+
+.koa-md p {
+  margin: 0 0 16px;
+}
+
+.koa-md a {
+  color: var(--k-sage-mid);
+  text-decoration: none;
+}
+.koa-md a:hover {
+  color: var(--k-sage-strong);
+  text-decoration: underline;
+}
+
+.koa-md ul,
+.koa-md ol {
+  margin: 0 0 16px;
+  padding-left: 18px;
+  line-height: 1.9;
+}
+.koa-md li {
+  margin: 0;
+}
+.koa-md li::marker {
+  color: var(--k-text-label);
+}
+
+.koa-md code {
+  font-family: var(--font-mono);
+  font-size: var(--text-control);
+  color: var(--k-text-dim);
+  background: var(--k-inset);
+  border: 1px solid var(--k-border-subtle);
+  padding: 1px 5px;
+}
+
+.koa-md pre {
+  font-family: var(--font-mono);
+  font-size: var(--text-control);
+  color: var(--k-text-dim);
+  background: var(--k-inset);
+  border: 1px solid var(--k-border-subtle);
+  padding: 12px 14px;
+  margin: 0 0 18px;
+  overflow-x: auto;
+  line-height: 1.8;
+}
+.koa-md pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+.koa-md blockquote {
+  margin: 0 0 16px;
+  padding: 2px 0 2px 14px;
+  border-left: 1px solid var(--k-border-control);
+  color: var(--k-text-faded);
+}
+
+.koa-md hr {
+  border: none;
+  border-top: 1px solid var(--k-border-subtle);
+  margin: 24px 0;
+}
+
+.koa-md img {
+  max-width: 100%;
+  height: auto;
+}
+
+.koa-md table {
+  border-collapse: collapse;
+  margin: 0 0 18px;
+  font-size: var(--text-control);
+  display: block;
+  overflow-x: auto;
+}
+.koa-md th,
+.koa-md td {
+  border: 1px solid var(--k-border-subtle);
+  padding: 7px 11px;
+  text-align: left;
+}
+.koa-md th {
+  color: var(--k-text-secondary);
+  font-weight: 500;
+}
+
+.koa-md input[type="checkbox"] {
+  accent-color: var(--k-sage);
+  margin-right: 6px;
+}

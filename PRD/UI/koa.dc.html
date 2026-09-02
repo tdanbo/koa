@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;450;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0;background:#0d0e0f;color:#d7d9d6;font-family:'IBM Plex Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#9db0a4;text-decoration:none}
+a:hover{color:#c3d2c8}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.07)}
+::-webkit-scrollbar-track{background:transparent}
+input,button{font-family:inherit}
+input:focus{outline:none}
+@keyframes koaPulse{0%,100%{opacity:.35}50%{opacity:1}}
+</style>
+</helmet>
+<div style="height:100vh;width:100%;display:flex;flex-direction:column;background:#0d0e0f;border:1px solid rgba(255,255,255,.09);overflow:hidden">
+
+  <div style="flex:none;height:32px;display:flex;align-items:stretch;justify-content:space-between;background:#101213;border-bottom:1px solid rgba(255,255,255,.06)">
+    <div style="display:flex;align-items:center;gap:9px;padding-left:12px">
+      <div style="width:13px;height:13px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:600;color:#8d938f">K</div>
+      <span style="font-size:11.5px;color:#7c837f;letter-spacing:.01em">koa</span>
+    </div>
+    <div style="display:flex;align-items:stretch">
+      <div style="width:46px;display:flex;align-items:center;justify-content:center;cursor:default" style-hover="background:rgba(255,255,255,.06)">
+        <svg width="10" height="10" viewBox="0 0 10 10" stroke="#9ea4a0" stroke-width="1"><path d="M0 5h10"></path></svg>
+      </div>
+      <div style="width:46px;display:flex;align-items:center;justify-content:center;cursor:default" style-hover="background:rgba(255,255,255,.06)">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="#9ea4a0" stroke-width="1"><rect x="0.5" y="0.5" width="9" height="9"></rect></svg>
+      </div>
+      <div style="width:46px;display:flex;align-items:center;justify-content:center;cursor:default" style-hover="background:#8a3a35">
+        <svg width="10" height="10" viewBox="0 0 10 10" stroke="#9ea4a0" stroke-width="1"><path d="M0 0l10 10M10 0L0 10"></path></svg>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex:1;min-height:0;display:flex;background:#131516">
+
+    <div style="flex:none;width:{{ railWidth }};border-right:1px solid rgba(255,255,255,.06);background:#161819;display:flex;flex-direction:column">
+      <div style="flex:none;height:56px;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid rgba(255,255,255,.06)">
+        <div style="width:22px;height:22px;border:1px solid rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#a8b3ac">K</div>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;font-weight:500;color:#c9ccc8">koa</span></sc-if>
+      </div>
+
+      <div style="flex:1;min-height:0;display:flex;flex-direction:column;gap:2px;padding:14px 10px">
+        <div onClick="{{ goDiscover }}" style="display:flex;align-items:center;gap:11px;padding:8px 10px;cursor:pointer;font-size:13px;background:{{ navBg.discover }};color:{{ navFg.discover }}" style-hover="background:rgba(255,255,255,.045)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="7" cy="7" r="4.6"></circle><path d="M10.4 10.4L14 14"></path></svg>
+          <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}"><span>Discover</span></sc-if>
+        </div>
+        <div onClick="{{ goInstalled }}" style="display:flex;align-items:center;gap:11px;padding:8px 10px;cursor:pointer;font-size:13px;background:{{ navBg.installed }};color:{{ navFg.installed }}" style-hover="background:rgba(255,255,255,.045)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M2.5 5.5L8 2.5l5.5 3v5L8 13.5l-5.5-3z"></path><path d="M2.5 5.5L8 8.5l5.5-3M8 8.5v5"></path></svg>
+          <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}"><span>Installed</span></sc-if>
+        </div>
+        <div onClick="{{ goLogs }}" style="display:flex;align-items:center;gap:11px;padding:8px 10px;cursor:pointer;font-size:13px;background:{{ navBg.logs }};color:{{ navFg.logs }}" style-hover="background:rgba(255,255,255,.045)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2.5" y="3" width="11" height="10" rx="1.6"></rect><path d="M5 6.5l1.8 1.6L5 9.7M8.8 10h2.6"></path></svg>
+          <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}"><span style="flex:1">Running</span></sc-if>
+          <sc-if value="{{ hasRunning }}" hint-placeholder-val="{{ true }}"><span style="width:5px;height:5px;border-radius:50%;background:#7f9a86;animation:koaPulse 2.4s ease-in-out infinite"></span></sc-if>
+        </div>
+        <div style="flex:1"></div>
+        <div onClick="{{ goSettings }}" style="display:flex;align-items:center;gap:11px;padding:8px 10px;cursor:pointer;font-size:13px;background:{{ navBg.settings }};color:{{ navFg.settings }}" style-hover="background:rgba(255,255,255,.045)">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="8" cy="8" r="2.1"></circle><path d="M8 1.8v1.7M8 12.5v1.7M14.2 8h-1.7M3.5 8H1.8M12.4 3.6l-1.2 1.2M4.8 11.2l-1.2 1.2M12.4 12.4l-1.2-1.2M4.8 4.8L3.6 3.6"></path></svg>
+          <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}"><span>Settings</span></sc-if>
+        </div>
+      </div>
+
+      <div style="flex:none;height:52px;display:flex;align-items:center;gap:10px;padding:0 18px;border-top:1px solid rgba(255,255,255,.06)">
+        <div style="width:20px;height:20px;border-radius:50%;background:#2a2f30;border:1px solid rgba(255,255,255,.09);flex:none"></div>
+        <sc-if value="{{ showLabels }}" hint-placeholder-val="{{ true }}">
+          <div style="min-width:0">
+            <div style="font-size:12px;color:#a9aeaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">m-halvorsen</div>
+            <div style="font-size:10.5px;color:#5f6663;margin-top:1px">Signed in</div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+      <div style="flex:none;height:56px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.06);background:#161819">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0">
+          <sc-if value="{{ hasCrumb }}">
+            <div onClick="{{ goBack }}" style="display:flex;align-items:center;gap:6px;font-size:12.5px;color:#6d7370;cursor:pointer" style-hover="color:#a9aeaa">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9.5 3.5L5 8l4.5 4.5"></path></svg>
+              <span>{{ crumb }}</span>
+            </div>
+            <span style="font-size:12.5px;color:#3f4643">/</span>
+          </sc-if>
+          <h1 style="margin:0;font-size:15px;font-weight:500;letter-spacing:-.005em;color:#dfe1de;white-space:nowrap">{{ title }}</h1>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:10px;flex:none">
+          <sc-if value="{{ isDiscover }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.09);background:#131516;padding:6px 10px;width:230px">
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="#5f6663" stroke-width="1.3"><circle cx="7" cy="7" r="4.6"></circle><path d="M10.4 10.4L14 14"></path></svg>
+              <input placeholder="Filter repositories" style="flex:1;min-width:0;background:none;border:none;color:#d7d9d6;font-size:12.5px;padding:0">
+            </div>
+          </sc-if>
+          <sc-if value="{{ isInstalled }}">
+            <div style="font-size:12px;padding:6px 13px;border:1px solid rgba(255,255,255,.10);color:#b0b5b1;cursor:pointer" style-hover="background:rgba(255,255,255,.05)">Check all for updates</div>
+          </sc-if>
+          <sc-if value="{{ isApp }}">
+            <div onClick="{{ goLogs }}" style="font-size:12px;padding:6px 14px;border:1px solid rgba(158,178,164,.28);color:#b3c4b8;background:rgba(158,178,164,.10);cursor:pointer" style-hover="background:rgba(158,178,164,.17)">Launch</div>
+          </sc-if>
+          <sc-if value="{{ isLogs }}">
+            <div style="display:flex;gap:9px">
+              <div style="font-size:12px;padding:6px 13px;border:1px solid rgba(255,255,255,.10);color:#b0b5b1;cursor:pointer" style-hover="background:rgba(255,255,255,.05)">Clear</div>
+              <div style="font-size:12px;padding:6px 13px;border:1px solid rgba(168,131,126,.28);color:#bb928c;cursor:pointer" style-hover="background:rgba(168,131,126,.10)">Stop</div>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+
+      <div style="flex:1;min-height:0;overflow-y:auto;background:#131516">
+
+        <sc-if value="{{ isDiscover }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:20px 24px 26px">
+            <sc-for list="{{ repos }}" as="r" hint-placeholder-count="4">
+              <div onClick="{{ r.open }}" style="display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;padding:{{ rowPad }};border:1px solid rgba(255,255,255,.07);background:#161819;cursor:pointer" style-hover="background:#191c1d;border-color:rgba(255,255,255,.12)">
+                <div style="min-width:0">
+                  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+                    <span style="font-size:14.5px;font-weight:500;color:#dcdedb;letter-spacing:-.005em">{{ r.name }}</span>
+                    <span style="font-size:11px;color:#5f6663;font-family:'IBM Plex Mono',monospace">{{ r.owner }}</span>
+                    <span style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#6a716d;border:1px solid rgba(255,255,255,.09);padding:1px 5px">{{ r.visibility }}</span>
+                  </div>
+                  <sc-if value="{{ showDescriptions }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-size:12.5px;color:#767c78;margin-top:7px;line-height:1.5;text-wrap:pretty">{{ r.description }}</div>
+                  </sc-if>
+                </div>
+                <div style="display:flex;align-items:center;gap:18px;flex:none">
+                  <span style="font-size:11.5px;font-family:'IBM Plex Mono',monospace;color:{{ r.statusColor }};white-space:nowrap">{{ r.status }}</span>
+                  <div style="width:82px;display:flex;justify-content:flex-end">
+                    <sc-if value="{{ r.canInstall }}" hint-placeholder-val="{{ true }}">
+                      <span style="font-size:12px;padding:6px 13px;border:1px solid rgba(255,255,255,.11);color:#c2c7c3;background:rgba(255,255,255,.03)" style-hover="background:rgba(255,255,255,.07)">{{ r.action }}</span>
+                    </sc-if>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isRepo }}">
+          <div style="padding:24px 24px 40px;display:flex;flex-direction:column;gap:20px">
+            <div style="border:1px solid rgba(255,255,255,.07);background:#161819;padding:22px 24px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:32px">
+                <div style="min-width:0">
+                  <h2 style="margin:0;font-size:20px;font-weight:500;letter-spacing:-.015em;color:#e3e5e2">{{ repo.name }}</h2>
+                  <div style="display:flex;align-items:center;gap:10px;margin-top:9px">
+                    <span style="font-size:12px;color:#6d7370;font-family:'IBM Plex Mono',monospace">{{ repo.owner }}</span>
+                    <span style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#6a716d;border:1px solid rgba(255,255,255,.09);padding:1px 5px">{{ repo.visibility }}</span>
+                  </div>
+                  <p style="margin:16px 0 0;font-size:13px;color:#7d837f;line-height:1.6;max-width:64ch;text-wrap:pretty">{{ repo.description }}</p>
+                </div>
+                <sc-if value="{{ repo.canInstall }}" hint-placeholder-val="{{ true }}">
+                  <div onClick="{{ goApp }}" style="flex:none;font-size:12.5px;padding:8px 16px;border:1px solid rgba(158,178,164,.28);color:#b3c4b8;background:rgba(158,178,164,.10);cursor:pointer" style-hover="background:rgba(158,178,164,.17)">{{ repo.action }}</div>
+                </sc-if>
+              </div>
+
+              <sc-if value="{{ repo.incompatible }}">
+                <div style="margin-top:20px;border:1px solid rgba(183,161,121,.22);background:rgba(183,161,121,.06);padding:14px 16px">
+                  <div style="font-size:12.5px;color:#b8a179;margin-bottom:5px">Incompatible with this platform</div>
+                  <div style="font-size:12px;color:#7d837f;line-height:1.55">No release asset matches <span style="font-family:'IBM Plex Mono',monospace;color:#969b97">{repo}-{version}-amd64-windows.zip</span>. Latest release <span style="font-family:'IBM Plex Mono',monospace">v0.6.1</span> publishes source archives only.</div>
+                </div>
+              </sc-if>
+
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.06)">
+                <div><div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#5f6663">Latest release</div><div style="font-size:13px;font-family:'IBM Plex Mono',monospace;color:#c2c7c3;margin-top:6px">{{ repo.latest }}</div></div>
+                <div><div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#5f6663">Published</div><div style="font-size:13px;color:#c2c7c3;margin-top:6px">{{ repo.published }}</div></div>
+                <div style="min-width:0"><div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#5f6663">Asset</div><div style="font-size:13px;font-family:'IBM Plex Mono',monospace;color:#c2c7c3;margin-top:6px;overflow:hidden;text-overflow:ellipsis">{{ repo.asset }}</div></div>
+              </div>
+            </div>
+
+            <div style="border:1px solid rgba(255,255,255,.07);background:#161819;padding:22px 24px">
+              <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#5f6663;margin-bottom:18px">Readme</div>
+              <h3 style="margin:0 0 10px;font-size:16px;font-weight:500;color:#dcdedb">{{ repo.name }}</h3>
+              <p style="margin:0 0 18px;font-size:13px;line-height:1.7;color:#868c88;max-width:70ch;text-wrap:pretty">{{ repo.readmeIntro }}</p>
+              <div style="font-size:13px;font-weight:500;color:#b9beba;margin-bottom:9px">Installation</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8d938f;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);padding:12px 14px;margin-bottom:18px">$ koa install {{ repo.name }}</div>
+              <div style="font-size:13px;font-weight:500;color:#b9beba;margin-bottom:9px">Usage</div>
+              <ul style="margin:0;padding-left:18px;font-size:13px;line-height:1.9;color:#868c88">
+                <li>Point it at a project directory and it watches for changes.</li>
+                <li>Results stream to stdout; pass <span style="font-family:'IBM Plex Mono',monospace;font-size:12px">--json</span> for machine output.</li>
+                <li>Exit code is non-zero when any check fails.</li>
+              </ul>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isInstalled }}">
+          <div style="display:flex;flex-direction:column;gap:10px;padding:20px 24px 26px">
+            <sc-for list="{{ installed }}" as="a" hint-placeholder-count="3">
+              <div onClick="{{ a.open }}" style="display:grid;grid-template-columns:1fr auto;gap:28px;align-items:center;padding:{{ rowPad }};border:1px solid rgba(255,255,255,.07);background:#161819;cursor:pointer" style-hover="background:#191c1d;border-color:rgba(255,255,255,.12)">
+                <div style="min-width:0">
+                  <div style="display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
+                    <span style="font-size:14.5px;font-weight:500;color:#dcdedb">{{ a.name }}</span>
+                    <span style="font-size:11.5px;font-family:'IBM Plex Mono',monospace;color:#6d7370">{{ a.version }}</span>
+                    <sc-if value="{{ a.hasUpdate }}"><span style="font-size:10.5px;color:#b8a179;border:1px solid rgba(183,161,121,.25);padding:1px 6px">Update</span></sc-if>
+                    <sc-if value="{{ a.running }}"><span style="font-size:10.5px;color:#8fa896;display:flex;align-items:center;gap:5px"><span style="width:5px;height:5px;border-radius:50%;background:#7f9a86;display:inline-block"></span>Running</span></sc-if>
+                  </div>
+                  <sc-if value="{{ showDescriptions }}" hint-placeholder-val="{{ true }}">
+                    <div style="font-size:12.5px;color:#767c78;margin-top:7px;line-height:1.5">{{ a.description }}</div>
+                  </sc-if>
+                </div>
+                <div style="display:flex;align-items:center;gap:18px;flex:none">
+                  <span style="font-size:11.5px;color:#5f6663;font-family:'IBM Plex Mono',monospace">{{ a.checked }}</span>
+                  <span style="font-size:12px;padding:6px 13px;border:1px solid rgba(255,255,255,.11);color:#c2c7c3;background:rgba(255,255,255,.03)" style-hover="background:rgba(255,255,255,.07)">Launch</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isApp }}">
+          <div style="padding:24px 24px 40px;display:flex;flex-direction:column;gap:20px">
+            <div style="border:1px solid rgba(255,255,255,.07);background:#161819;padding:22px 24px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:32px">
+                <div style="min-width:0">
+                  <h2 style="margin:0;font-size:20px;font-weight:500;letter-spacing:-.015em;color:#e3e5e2">{{ app.name }}</h2>
+                  <div style="display:flex;align-items:center;gap:10px;margin-top:9px">
+                    <span style="font-size:12px;color:#6d7370;font-family:'IBM Plex Mono',monospace">{{ app.owner }}</span>
+                    <span style="font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#6a716d;border:1px solid rgba(255,255,255,.09);padding:1px 5px">{{ app.visibility }}</span>
+                    <span style="font-size:12px;color:#3f4643">·</span>
+                    <span style="font-size:12px;font-family:'IBM Plex Mono',monospace;color:#9aa09c">{{ app.version }}</span>
+                  </div>
+                  <p style="margin:16px 0 0;font-size:13px;color:#7d837f;line-height:1.6;max-width:64ch;text-wrap:pretty">{{ app.description }}</p>
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;flex:none">
+                  <div style="font-size:12.5px;padding:8px 14px;border:1px solid rgba(255,255,255,.11);color:#b0b5b1;cursor:pointer" style-hover="background:rgba(255,255,255,.05)">Check for updates</div>
+                </div>
+              </div>
+            </div>
+
+            <sc-if value="{{ app.hasUpdate }}">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:20px;border:1px solid rgba(183,161,121,.20);background:rgba(183,161,121,.055);padding:13px 20px">
+                <div style="font-size:12.5px;color:#a9a08b">Version <span style="font-family:'IBM Plex Mono',monospace;color:#c8b287">{{ app.latest }}</span> is available — released {{ app.latestAge }}.</div>
+                <div style="font-size:12px;padding:6px 14px;border:1px solid rgba(183,161,121,.3);color:#c8b287;cursor:pointer;flex:none" style-hover="background:rgba(183,161,121,.12)">Update</div>
+              </div>
+            </sc-if>
+
+            <div style="border:1px solid rgba(255,255,255,.07);background:#161819">
+              <div style="display:flex;gap:24px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.06)">
+                <div onClick="{{ tabOverview }}" style="font-size:12.5px;padding:14px 0 12px;cursor:pointer;border-bottom:1px solid {{ tabLine.overview }};color:{{ tabFg.overview }};margin-bottom:-1px">Overview</div>
+                <div onClick="{{ tabVersions }}" style="font-size:12.5px;padding:14px 0 12px;cursor:pointer;border-bottom:1px solid {{ tabLine.versions }};color:{{ tabFg.versions }};margin-bottom:-1px">Versions</div>
+                <div onClick="{{ tabReadme }}" style="font-size:12.5px;padding:14px 0 12px;cursor:pointer;border-bottom:1px solid {{ tabLine.readme }};color:{{ tabFg.readme }};margin-bottom:-1px">Readme</div>
+              </div>
+
+              <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+                <div style="padding:6px 24px 22px">
+                  <sc-for list="{{ facts }}" as="f" hint-placeholder-count="5">
+                    <div style="display:grid;grid-template-columns:190px 1fr;gap:24px;align-items:baseline;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+                      <div style="font-size:12px;color:#616864">{{ f.label }}</div>
+                      <div style="font-size:12.5px;color:#b6bbb7;font-family:{{ f.font }}">{{ f.value }}</div>
+                    </div>
+                  </sc-for>
+                  <div style="display:grid;grid-template-columns:190px 1fr;gap:24px;align-items:center;padding:18px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+                    <div style="font-size:12px;color:#616864">Auto-update</div>
+                    <div style="display:flex;align-items:center;justify-content:space-between;gap:20px">
+                      <div style="font-size:12.5px;color:#7d837f;max-width:52ch;line-height:1.55">Install the latest release automatically on launch and on refresh, without confirming.</div>
+                      <div onClick="{{ toggleAuto }}" style="flex:none;width:36px;height:20px;border-radius:10px;padding:2px;cursor:pointer;background:{{ autoTrack }};border:1px solid rgba(255,255,255,.10)">
+                        <div style="width:14px;height:14px;border-radius:50%;background:{{ autoKnobBg }};transform:translateX({{ autoKnobX }});transition:transform .16s ease"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div style="display:flex;align-items:center;gap:20px;padding-top:22px">
+                    <div style="font-size:12.5px;color:#a8837e;cursor:pointer" style-hover="color:#c49a94">Uninstall</div>
+                    <div style="font-size:12px;color:#4f5552">Removes the binary from <span style="font-family:'IBM Plex Mono',monospace">%LOCALAPPDATA%\koa\bin</span> and forgets this app.</div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isVersions }}">
+                <div style="padding:18px 24px 22px">
+                  <p style="margin:0 0 14px;font-size:12.5px;color:#6d7370;max-width:70ch;line-height:1.6">One version is kept on disk at a time. Selecting a tag downloads that release's asset and replaces the current binary.</p>
+                  <div style="border-top:1px solid rgba(255,255,255,.06)">
+                    <sc-for list="{{ versions }}" as="v" hint-placeholder-count="5">
+                      <div style="display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;padding:15px 2px;border-bottom:1px solid rgba(255,255,255,.05)" style-hover="background:rgba(255,255,255,.022)">
+                        <div style="display:flex;align-items:baseline;gap:12px">
+                          <span style="font-size:13px;font-family:'IBM Plex Mono',monospace;color:{{ v.tagColor }}">{{ v.tag }}</span>
+                          <span style="font-size:11.5px;color:#5f6663">{{ v.date }}</span>
+                          <sc-if value="{{ v.isCurrent }}"><span style="font-size:10.5px;color:#8fa896;border:1px solid rgba(143,168,150,.28);padding:1px 6px">Current</span></sc-if>
+                          <sc-if value="{{ v.isLatest }}"><span style="font-size:10.5px;color:#7c837f;border:1px solid rgba(255,255,255,.09);padding:1px 6px">Latest</span></sc-if>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:16px">
+                          <span style="font-size:11.5px;font-family:'IBM Plex Mono',monospace;color:#4f5552">{{ v.size }}</span>
+                          <span style="font-size:12px;padding:5px 12px;border:1px solid rgba(255,255,255,.10);color:{{ v.actionColor }};cursor:pointer" style-hover="background:rgba(255,255,255,.06)">{{ v.action }}</span>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ isReadme }}">
+                <div style="padding:22px 24px 26px">
+                  <h3 style="margin:0 0 10px;font-size:16px;font-weight:500;color:#dcdedb">{{ app.name }}</h3>
+                  <p style="margin:0 0 18px;font-size:13px;line-height:1.7;color:#868c88;max-width:70ch;text-wrap:pretty">{{ app.readmeIntro }}</p>
+                  <div style="font-size:13px;font-weight:500;color:#b9beba;margin-bottom:9px">Commands</div>
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#8d938f;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.06);padding:12px 14px;line-height:1.8;margin-bottom:18px">dumpscope open &lt;file.pacedump&gt;<br>dumpscope diff &lt;a&gt; &lt;b&gt; --json<br>dumpscope watch ./Saved/Pace</div>
+                  <p style="margin:0;font-size:13px;line-height:1.7;color:#868c88;max-width:70ch">Fetched from the repository readme endpoint, not from the release archive — the same path Discover uses before anything is installed.</p>
+                </div>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isLogs }}">
+          <div style="display:flex;flex-direction:column">
+            <div style="display:flex;gap:22px;padding:0 24px;border-bottom:1px solid rgba(255,255,255,.06);background:#161819">
+              <sc-for list="{{ logTabs }}" as="t" hint-placeholder-count="2">
+                <div onClick="{{ t.open }}" style="display:flex;align-items:center;gap:8px;padding:12px 0 10px;cursor:pointer;border-bottom:1px solid {{ t.line }};color:{{ t.fg }};font-size:12.5px;margin-bottom:-1px">
+                  <span style="width:5px;height:5px;border-radius:50%;background:{{ t.dot }}"></span>
+                  <span style="font-family:'IBM Plex Mono',monospace">{{ t.name }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="padding:18px 24px 26px">
+              <sc-for list="{{ logLines }}" as="l" hint-placeholder-count="10">
+                <div style="display:grid;grid-template-columns:74px 1fr;gap:16px;font-family:'IBM Plex Mono',monospace;font-size:12px;line-height:2.05">
+                  <span style="color:#454b48">{{ l.time }}</span>
+                  <span style="color:{{ l.color }};white-space:pre-wrap">{{ l.text }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isSettings }}">
+          <div style="padding:24px 24px 40px;display:flex;flex-direction:column;gap:20px">
+            <div style="border:1px solid rgba(255,255,255,.07);background:#161819;padding:20px 24px">
+              <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#5f6663;margin-bottom:6px">Account</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+                <div style="display:flex;align-items:center;gap:12px">
+                  <div style="width:30px;height:30px;border-radius:50%;background:#2a2f30;border:1px solid rgba(255,255,255,.09)"></div>
+                  <div>
+                    <div style="font-size:13px;color:#c8ccc8">m-halvorsen</div>
+                    <div style="font-size:11.5px;color:#616864;margin-top:2px">Device Flow · scopes <span style="font-family:'IBM Plex Mono',monospace">repo</span>, <span style="font-family:'IBM Plex Mono',monospace">read:org</span> · token in Credential Manager</div>
+                  </div>
+                </div>
+                <div style="font-size:12px;padding:6px 13px;border:1px solid rgba(255,255,255,.10);color:#b0b5b1;cursor:pointer;flex:none" style-hover="background:rgba(255,255,255,.05)">Sign out</div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 0 0">
+                <div style="font-size:12.5px;color:#7d837f;max-width:60ch;line-height:1.55">Paste a token instead. Fine-grained tokens return no org memberships, so you'll need to name orgs manually.</div>
+                <div style="font-size:12px;color:#6d7370;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:3px;cursor:pointer;flex:none" style-hover="color:#a9aeaa">Enter token</div>
+              </div>
+            </div>
+
+            <div style="border:1px solid rgba(255,255,255,.07);background:#161819;padding:20px 24px">
+              <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#5f6663;margin-bottom:6px">Appearance</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 0 0">
+                <div style="font-size:13px;color:#c8ccc8">Theme</div>
+                <div style="display:flex;border:1px solid rgba(255,255,255,.09)">
+                  <sc-for list="{{ themes }}" as="t" hint-placeholder-count="3">
+                    <div onClick="{{ t.pick }}" style="font-size:12px;padding:6px 15px;cursor:pointer;background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+            <div style="border:1px solid rgba(255,255,255,.07);background:#161819;padding:20px 24px">
+              <div style="font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:#5f6663;margin-bottom:6px">Behavior</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.05)">
+                <div>
+                  <div style="font-size:13px;color:#c8ccc8">Minimize to tray on close</div>
+                  <div style="font-size:12px;color:#616864;margin-top:4px">Closing the window hides koa instead of quitting.</div>
+                </div>
+                <div onClick="{{ toggleTray }}" style="flex:none;width:36px;height:20px;border-radius:10px;padding:2px;cursor:pointer;background:{{ trayTrack }};border:1px solid rgba(255,255,255,.10)">
+                  <div style="width:14px;height:14px;border-radius:50%;background:{{ trayKnobBg }};transform:translateX({{ trayKnobX }});transition:transform .16s ease"></div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px 0 0">
+                <div>
+                  <div style="font-size:13px;color:#c8ccc8">Bin folder</div>
+                  <div style="font-size:12px;color:#616864;margin-top:4px;font-family:'IBM Plex Mono',monospace">%LOCALAPPDATA%\koa\bin · on PATH</div>
+                </div>
+                <div style="font-size:12px;color:#6d7370;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:3px;cursor:pointer;flex:none" style-hover="color:#a9aeaa">Reveal</div>
+              </div>
+            </div>
+
+            <p style="margin:0;font-size:12px;color:#5b625e;line-height:1.65;max-width:70ch;text-wrap:pretty">koa installs and runs third-party binaries published by repositories you have access to. Only install repositories you trust.</p>
+          </div>
+        </sc-if>
+
+      </div>
+
+      <div style="flex:none;height:52px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:0 24px;border-top:1px solid rgba(255,255,255,.06);background:#161819">
+        <div style="font-size:11.5px;color:#6d7370;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ footerLeft }}</div>
+        <div style="font-size:11.5px;font-family:'IBM Plex Mono',monospace;color:#5f6663;white-space:nowrap;flex:none">{{ footerRight }}</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;Airy&quot;,&quot;Compact&quot;],&quot;default&quot;:&quot;Airy&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;showDescriptions&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout&quot;},&quot;compactRail&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Layout&quot;}}">
+const SAGE = '#8fa896', AMBER = '#b8a179', DIM = '#6d7370', TEXT = '#c2c7c3';
+
+class Component extends DCLogic {
+  state = {
+    view: 'discover', repoId: 'dumpscope', appId: 'dumpscope',
+    tab: 'overview', logTab: 0, auto: false, tray: true, theme: 'System'
+  };
+
+  repos = [
+    { id:'pace-cli', name:'pace-cli', owner:'playdead', visibility:'Private', description:'Command-line driver for Pace build pipelines — schedule, inspect and cancel jobs.', status:'Installed v2.4.1', statusColor:SAGE, action:'Open', canInstall:true, latest:'v2.4.1', published:'12 Aug 2026', asset:'pace-cli-2.4.1-amd64-windows.zip', readmeIntro:'pace-cli talks to the Pace scheduler over the same API the editor uses, so anything you can do from the build dashboard you can script.' },
+    { id:'dumpscope', name:'dumpscope', owner:'playdead', visibility:'Private', description:'Open, diff and watch Pace debug dumps without leaving the terminal.', status:'Update available', statusColor:AMBER, action:'Update', canInstall:true, latest:'v1.0.0', published:'30 Aug 2026', asset:'dumpscope-1.0.0-amd64-windows.zip', readmeIntro:'dumpscope reads recorded animation, movement and state-machine dumps and renders them as a readable timeline you can scrub, diff and filter.' },
+    { id:'assetlint', name:'assetlint', owner:'playdead', visibility:'Public', description:'Validates naming, budgets and import settings across an asset library.', status:'Not installed', statusColor:DIM, action:'Install', canInstall:true, latest:'v1.3.0', published:'21 Jul 2026', asset:'assetlint-1.3.0-amd64-windows.zip', readmeIntro:'assetlint walks a project directory and reports every asset that breaks a rule in your ruleset file, with a non-zero exit code for CI.' },
+    { id:'rigcheck', name:'rigcheck', owner:'m-halvorsen', visibility:'Private', description:'Skeleton and constraint sanity checks for character rigs.', status:'Incompatible', statusColor:'#5f6663', action:'', canInstall:false, incompatible:true, latest:'v0.6.1', published:'02 Jun 2026', asset:'—', readmeIntro:'rigcheck validates joint hierarchies and constraint cycles before a rig reaches the animation team.' },
+    { id:'buildwatch', name:'buildwatch', owner:'playdead-tools', visibility:'Public', description:'Tray notifier for build and test results on the shared farm.', status:'Not installed', statusColor:DIM, action:'Install', canInstall:true, latest:'v0.11.4', published:'27 Aug 2026', asset:'buildwatch-0.11.4-amd64-windows.zip', readmeIntro:'buildwatch subscribes to farm events and shows a quiet notification when a build you care about changes state.' },
+    { id:'shaderpack', name:'shaderpack', owner:'m-halvorsen', visibility:'Private', description:'Packs and hashes shader variants into a single distributable bundle.', status:'Installed v0.4.0', statusColor:SAGE, action:'Open', canInstall:true, latest:'v0.4.0', published:'09 Aug 2026', asset:'shaderpack-0.4.0-amd64-windows.zip', readmeIntro:'shaderpack collapses a variant tree into one deterministic bundle so builds stay reproducible across machines.' }
+  ];
+
+  installedIds = { 'pace-cli':{version:'v2.4.1', checked:'2h ago', running:true, hasUpdate:false},
+                   'dumpscope':{version:'v0.9.2', checked:'4m ago', running:false, hasUpdate:true},
+                   'shaderpack':{version:'v0.4.0', checked:'1d ago', running:false, hasUpdate:false} };
+
+  versionData = [
+    { tag:'v1.0.0', date:'30 Aug 2026', size:'6.4 MB', isLatest:true },
+    { tag:'v0.9.2', date:'11 Aug 2026', size:'6.2 MB', isCurrent:true },
+    { tag:'v0.9.1', date:'28 Jul 2026', size:'6.2 MB' },
+    { tag:'v0.9.0', date:'14 Jul 2026', size:'6.1 MB' },
+    { tag:'v0.8.3', date:'02 Jun 2026', size:'5.9 MB' }
+  ];
+
+  logs = {
+    'pace-cli': [
+      ['10:04:02', 'pace-cli 2.4.1 (windows/amd64)', '#8a908c'],
+      ['10:04:02', 'reading config from %APPDATA%\\pace\\cli.toml', '#767c78'],
+      ['10:04:03', 'connected to scheduler pace-farm-01', '#8fa896'],
+      ['10:04:03', 'watching queue "animation" (14 jobs)', '#767c78'],
+      ['10:04:19', 'job 8841 → running   rig-bake/full', '#8a908c'],
+      ['10:04:41', 'job 8841 → complete  38.2s', '#8fa896'],
+      ['10:05:12', 'job 8842 → running   anim-export/batch', '#8a908c'],
+      ['10:06:03', 'warn: shard 3 responded in 4.1s (threshold 2.0s)', '#b8a179'],
+      ['10:06:44', 'job 8842 → complete  91.7s', '#8fa896'],
+      ['10:07:10', 'idle — 0 jobs queued', '#767c78'],
+      ['10:08:13', 'heartbeat ok', '#5f6663']
+    ],
+    'dumpscope': [
+      ['09:52:41', 'dumpscope 0.9.2 (windows/amd64)', '#8a908c'],
+      ['09:52:41', 'open Saved\\Pace\\2026-09-02-0941.pacedump', '#767c78'],
+      ['09:52:42', 'parsed 4,812 frames · 61 tracks', '#767c78'],
+      ['09:52:42', 'warn: 3 IK solver oscillations detected', '#b8a179'],
+      ['09:53:07', 'exported report to .\\dumpscope-report.json', '#8fa896'],
+      ['09:53:07', 'process exited with code 0', '#5f6663']
+    ]
+  };
+
+  go = (view, extra) => this.setState(Object.assign({ view }, extra || {}));
+
+  renderVals() {
+    const s = this.state;
+    const dense = (this.props.density ?? 'Airy') === 'Compact';
+    const rowPad = dense ? '13px 18px' : '18px 20px';
+    const navOn = (v) => (s.view === v || (v === 'discover' && s.view === 'repo') || (v === 'installed' && s.view === 'app'));
+    const navBg = {}, navFg = {};
+    ['discover','installed','logs','settings'].forEach(v => {
+      navBg[v] = navOn(v) ? 'rgba(255,255,255,.06)' : 'transparent';
+      navFg[v] = navOn(v) ? '#dcdedb' : '#7c837f';
+    });
+
+    const repo = this.repos.find(r => r.id === s.repoId) || this.repos[0];
+    const appMeta = this.installedIds[s.appId] || this.installedIds['dumpscope'];
+    const appRepo = this.repos.find(r => r.id === s.appId) || this.repos[1];
+    const app = Object.assign({}, appRepo, appMeta, { latestAge: '3 days ago' });
+
+    const tabLine = {}, tabFg = {};
+    ['overview','versions','readme'].forEach(t => {
+      tabLine[t] = s.tab === t ? '#9db0a4' : 'transparent';
+      tabFg[t] = s.tab === t ? '#dcdedb' : '#7c837f';
+    });
+
+    const mono = "'IBM Plex Mono',monospace";
+    const sans = "'IBM Plex Sans',sans-serif";
+
+    const logKeys = ['pace-cli','dumpscope'];
+    const activeLog = logKeys[s.logTab] || logKeys[0];
+
+    const chrome = {
+      discover: { title:'Discover', crumb:null,
+        footerLeft:'Repositories tagged koa across your account and 2 organizations.',
+        footerRight:'6 repos · refreshed 4m ago' },
+      repo: { title: repo.name, crumb:'Discover', back:() => this.go('discover'),
+        footerLeft:'github.com/' + repo.owner + '/' + repo.name,
+        footerRight: repo.latest + ' · ' + repo.published },
+      installed: { title:'Installed', crumb:null,
+        footerLeft:'3 apps in %LOCALAPPDATA%\\koa\\bin — on your PATH.',
+        footerRight:'1 update available' },
+      app: { title: app.name, crumb:'Installed', back:() => this.go('installed'),
+        footerLeft:'%LOCALAPPDATA%\\koa\\bin\\' + app.name + '.exe',
+        footerRight:'checked ' + app.checked },
+      logs: { title:'Running', crumb:null,
+        footerLeft:'1 process running · output streams into koa, not a terminal window.',
+        footerRight:'pid 48213 · uptime 00:04:11' },
+      settings: { title:'Settings', crumb:null,
+        footerLeft:'State in %APPDATA%\\koa\\state.json · token in Windows Credential Manager.',
+        footerRight:'koa 0.3.2' }
+    };
+    const c = chrome[s.view] || chrome.discover;
+
+    return {
+      railWidth: (this.props.compactRail ?? false) ? '58px' : '206px',
+      showLabels: !(this.props.compactRail ?? false),
+      showDescriptions: this.props.showDescriptions ?? true,
+      rowPad,
+      navBg, navFg,
+      hasRunning: true,
+      title: c.title, crumb: c.crumb, hasCrumb: !!c.crumb, goBack: c.back || (() => {}),
+      footerLeft: c.footerLeft, footerRight: c.footerRight,
+      isDiscover: s.view === 'discover', isRepo: s.view === 'repo',
+      isInstalled: s.view === 'installed', isApp: s.view === 'app',
+      isLogs: s.view === 'logs', isSettings: s.view === 'settings',
+      goDiscover: () => this.go('discover'),
+      goInstalled: () => this.go('installed'),
+      goLogs: () => this.go('logs'),
+      goSettings: () => this.go('settings'),
+      goApp: () => this.go('app', { appId: 'dumpscope', tab: 'overview' }),
+
+      repos: this.repos.map(r => Object.assign({}, r, {
+        open: () => this.installedIds[r.id]
+          ? this.go('app', { appId: r.id, tab: 'overview' })
+          : this.go('repo', { repoId: r.id })
+      })),
+      repo,
+
+      installed: Object.keys(this.installedIds).map(id => {
+        const base = this.repos.find(r => r.id === id);
+        return Object.assign({}, base, this.installedIds[id], {
+          open: () => this.go('app', { appId: id, tab: 'overview' })
+        });
+      }),
+
+      app,
+      tabOverview: () => this.setState({ tab: 'overview' }),
+      tabVersions: () => this.setState({ tab: 'versions' }),
+      tabReadme: () => this.setState({ tab: 'readme' }),
+      tabLine, tabFg,
+      isOverview: s.tab === 'overview', isVersions: s.tab === 'versions', isReadme: s.tab === 'readme',
+
+      facts: [
+        { label:'Installed version', value: app.version, font: mono },
+        { label:'Release published', value: '11 Aug 2026', font: sans },
+        { label:'Binary path', value: '%LOCALAPPDATA%\\koa\\bin\\' + app.name + '.exe', font: mono },
+        { label:'Command', value: '> ' + app.name, font: mono },
+        { label:'Asset', value: app.name + '-0.9.2-amd64-windows.zip', font: mono },
+        { label:'Size on disk', value: '6.2 MB', font: sans },
+        { label:'Last checked', value: app.checked, font: sans }
+      ],
+
+      toggleAuto: () => this.setState(st => ({ auto: !st.auto })),
+      autoTrack: s.auto ? 'rgba(143,168,150,.30)' : 'rgba(255,255,255,.06)',
+      autoKnobBg: s.auto ? '#a6bcae' : '#6a706d',
+      autoKnobX: s.auto ? '16px' : '0px',
+
+      versions: this.versionData.map(v => Object.assign({}, v, {
+        tagColor: v.isCurrent ? '#dcdedb' : TEXT,
+        action: v.isCurrent ? 'Reinstall' : (v.isLatest ? 'Update' : 'Roll back'),
+        actionColor: v.isLatest ? '#b3c4b8' : '#a9aeaa'
+      })),
+
+      logTabs: logKeys.map((k, i) => ({
+        name: k,
+        open: () => this.setState({ logTab: i }),
+        line: s.logTab === i ? '#9db0a4' : 'transparent',
+        fg: s.logTab === i ? '#dcdedb' : '#7c837f',
+        dot: k === 'pace-cli' ? '#7f9a86' : '#4f5552'
+      })),
+      logLines: (this.logs[activeLog] || []).map(l => ({ time: l[0], text: l[1], color: l[2] })),
+
+      themes: ['Light','Dark','System'].map(t => ({
+        label: t,
+        pick: () => this.setState({ theme: t }),
+        bg: s.theme === t ? 'rgba(255,255,255,.07)' : 'transparent',
+        fg: s.theme === t ? '#dcdedb' : '#7c837f'
+      })),
+
+      toggleTray: () => this.setState(st => ({ tray: !st.tray })),
+      trayTrack: s.tray ? 'rgba(143,168,150,.30)' : 'rgba(255,255,255,.06)',
+      trayKnobBg: s.tray ? '#a6bcae' : '#6a706d',
+      trayKnobX: s.tray ? '16px' : '0px'
+    };
+  }
+}
+
+</script>
+</body>
+</html>

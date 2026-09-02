@@ -1,0 +1,20 @@
+# Wails / Go build output
+/build/bin/
+/koa
+/koa.exe
+
+# Generated Wails bindings — recreated by `wails dev` / `wails build`
+/frontend/wailsjs/
+
+# Frontend build output and dependencies
+/frontend/dist/*
+!/frontend/dist/.gitkeep
+/frontend/node_modules/
+/frontend/package.json.md5
+
+# Editor and OS noise
+.DS_Store
+*.swp
+
+# Local Claude Code permission overrides — machine/session-specific.
+.claude/settings.local.json
