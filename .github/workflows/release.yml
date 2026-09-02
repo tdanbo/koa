@@ -64,8 +64,10 @@ jobs:
         run: |
           tags=""
           if [ "${{ matrix.goos }}" = "linux" ]; then tags="-tags webkit2_41"; fi
+          # selfUpdateRepo is whatever repo actually built this binary, so a
+          # fork self-updates from itself rather than upstream.
           wails build $tags -clean \
-            -ldflags "-X main.version=${{ steps.version.outputs.tag }} -X main.githubClientID=${KOA_GITHUB_CLIENT_ID}"
+            -ldflags "-X main.version=${{ steps.version.outputs.tag }} -X main.githubClientID=${KOA_GITHUB_CLIENT_ID} -X main.selfUpdateRepo=${{ github.repository }}"
 
       - name: Package (linux)
         if: matrix.goos == 'linux'

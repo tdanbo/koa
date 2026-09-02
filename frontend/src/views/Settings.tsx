@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 
+import { errorMessage } from "../lib/format";
 import { useActions, useStore } from "../lib/store";
-import type { ThemeName } from "../lib/types";
+import type { SelfUpdateProgress, ThemeName } from "../lib/types";
 import {
   Banner,
   Button,
@@ -16,7 +17,7 @@ import {
 /** Settings: Account, Appearance, Behavior (PRD §13), closing with §18's
  *  trust reminder. */
 export function SettingsView() {
-  const { account, settings, boot, path, signIn } = useStore();
+  const { account, settings, boot, path, signIn, selfUpdate, selfUpdateProgress } = useStore();
   const actions = useActions();
 
   const [orgs, setOrgs] = useState(settings.manualOrgs.join(", "));
@@ -34,6 +35,24 @@ export function SettingsView() {
           <Mono>{account.plaintextPath}</Mono> with owner-only permissions. Install a
           Secret Service provider (for example gnome-keyring) and sign in again to move
           it into the keyring.
+        </Banner>
+      ) : null}
+
+      {selfUpdate.available ? (
+        <Banner
+          title={`koa ${selfUpdate.latest} is available`}
+          action={
+            <Button
+              variant="primary"
+              disabled={Boolean(selfUpdateProgress) && selfUpdateProgress?.stage !== "failed"}
+              onClick={() => void actions.installSelfUpdate()}
+            >
+              {selfUpdateProgress ? selfUpdateStageLabel(selfUpdateProgress) : "Update now"}
+            </Button>
+          }
+        >
+          You're on <Mono>{boot?.version}</Mono>. Updating downloads the release
+          asset, replaces this binary, and restarts koa.
         </Banner>
       ) : null}
 
@@ -181,6 +200,25 @@ export function SettingsView() {
         </div>
       </Card>
 
+      <Card className="px-6 py-5">
+        <SectionLabel>About</SectionLabel>
+        <div className="flex items-center justify-between gap-6 pt-4">
+          <div>
+            <div className="text-value text-title">
+              koa <Mono>{boot?.version}</Mono>
+            </div>
+            <div className="mt-1 text-control text-label">
+              {selfUpdate.available
+                ? `${selfUpdate.latest} is available.`
+                : "You're up to date."}
+            </div>
+          </div>
+          <LinkButton onClick={() => void actions.checkSelfUpdate()}>
+            Check for updates
+          </LinkButton>
+        </div>
+      </Card>
+
       <p className="max-w-[70ch] text-control leading-[1.65] text-faint">
         koa installs and runs third-party binaries published by repositories you have
         access to. Only install repositories you trust.
@@ -222,6 +260,30 @@ function TokenForm() {
       </div>
     </div>
   );
+}
+
+function selfUpdateStageLabel(progress: SelfUpdateProgress): string {
+  switch (progress.stage) {
+    case "resolving":
+      return "Resolving…";
+    case "downloading": {
+      if (progress.total > 0) {
+        const pct = Math.min(100, Math.round((progress.done / progress.total) * 100));
+        return `Downloading ${pct}%`;
+      }
+      return "Downloading…";
+    }
+    case "extracting":
+      return "Extracting…";
+    case "installing":
+      return "Installing…";
+    case "relaunching":
+      return "Restarting…";
+    case "failed":
+      return errorMessage(progress.error);
+    default:
+      return "Working…";
+  }
 }
 
 function accountSummary(account: {

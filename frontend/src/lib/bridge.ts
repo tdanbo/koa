@@ -8,6 +8,7 @@ import type {
   PathState,
   Process,
   RepoDetail,
+  SelfUpdateInfo,
   Settings,
   SignInPrompt,
   ThemeName,
@@ -111,6 +112,10 @@ export const koa = {
   pathStatus: () => call<PathState>("PathStatus"),
   revealBinFolder: () => call<void>("RevealBinFolder"),
   openExternal: (url: string) => call<void>("OpenExternal", url),
+
+  checkSelfUpdate: () => call<SelfUpdateInfo>("CheckSelfUpdate"),
+  selfUpdateStatus: () => call<SelfUpdateInfo>("SelfUpdateStatus"),
+  selfUpdate: () => call<void>("SelfUpdate"),
 };
 
 /** win drives koa's custom title bar, since the window is frameless. */

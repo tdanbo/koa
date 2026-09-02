@@ -20,7 +20,7 @@ Platforms: **Windows** and **Linux**, amd64.
 ## Install koa
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/playdead/koa/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/tdanbo/koa/main/install.sh | sh
 ```
 
 The script detects your OS, fetches koa's latest release, downloads the asset
@@ -31,15 +31,18 @@ matching koa's own naming convention, and installs the binary to
 |---|---|---|
 | `KOA_INSTALL_DIR` | Where the binary is placed | `~/.local/bin` |
 | `KOA_VERSION` | Install a specific tag | latest release |
-| `KOA_REPO` | Install from a fork | `playdead/koa` |
+| `KOA_REPO` | Install from a fork | `tdanbo/koa` |
 | `GITHUB_TOKEN` | Private repos, higher rate limits | unset |
 
 **Windows:** `curl | sh` is a Unix pattern, so there is no one-liner yet.
 Download the `.zip` from the releases page and unpack it. A PowerShell
 equivalent (`irm … | iex`) is a planned follow-up.
 
-Updating koa is re-running the install command. koa does not update itself from
-inside its own UI.
+koa checks its own latest release in the background and, when a newer one
+exists, shows an indicator next to Settings and a banner offering **Update
+now** — click it and koa downloads the matching release, replaces its own
+binary in place, and restarts. Re-running the install command remains a valid
+fallback (first install, or a location koa can't write to itself).
 
 ---
 
@@ -218,6 +221,20 @@ bake the ID in at build time (`-X main.githubClientID=…`) or set
 `KOA_GITHUB_CLIENT_ID` in the environment before launching. The Client ID is not
 a secret — Device Flow uses no client secret.
 
+### Releasing
+
+`main` is protected: every change lands through a pull request, and the `ci`
+workflow (backend vet/format/test/Windows-cross-build, frontend
+type-check/build) has to pass before it can merge. Force-pushes and deletion
+are blocked.
+
+Once a PR merges, `tag-release` auto-bumps the patch version (`vX.Y.Z` →
+`vX.Y.(Z+1)`), tags the new commit, and pushes the tag — docs-only merges
+(README, PRD) are skipped. That tag push triggers `release`, which builds
+Linux and Windows binaries and publishes them to the repo's Releases page
+under koa's own naming convention, exactly what `install.sh` and koa's own
+self-update expect to find.
+
 ---
 
 ## Project layout
@@ -249,4 +266,4 @@ layer is a thin shell over them.
 macOS. Architectures other than amd64. Global discovery across all of GitHub.
 A manual asset picker. Checksum or signature verification. `.deb` / `.rpm` /
 `.msi` packages. Keeping multiple versions side by side on disk. A GitHub App
-with fine-grained per-repository scoping. koa updating itself from its own UI.
+with fine-grained per-repository scoping.

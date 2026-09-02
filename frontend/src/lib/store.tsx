@@ -24,6 +24,8 @@ import {
   type PathState,
   type Process,
   type RepoDetail,
+  type SelfUpdateInfo,
+  type SelfUpdateProgress,
   type Settings,
   type SignInPrompt,
   type ThemeName,
@@ -84,6 +86,9 @@ interface State {
   installs: Record<string, InstallProgress>;
   toasts: ToastItem[];
 
+  selfUpdate: SelfUpdateInfo;
+  selfUpdateProgress: SelfUpdateProgress | null;
+
   signIn: {
     prompt: SignInPrompt | null;
     pending: boolean;
@@ -114,6 +119,14 @@ const emptySettings: Settings = {
   trustAcknowledged: false,
 };
 
+const emptySelfUpdate: SelfUpdateInfo = {
+  available: false,
+  current: "",
+  latest: "",
+  publishedAt: "",
+  url: "",
+};
+
 const initialState: State = {
   ready: false,
   fatal: "",
@@ -137,6 +150,8 @@ const initialState: State = {
   toasts: [],
   signIn: { prompt: null, pending: false, error: "", tokenOpen: false },
   trustPrompt: null,
+  selfUpdate: emptySelfUpdate,
+  selfUpdateProgress: null,
 };
 
 type Action =
@@ -167,7 +182,9 @@ type Action =
   | { type: "toast"; toast: Toast }
   | { type: "dismissToast"; id: number }
   | { type: "signIn"; patch: Partial<State["signIn"]> }
-  | { type: "trustPrompt"; value: State["trustPrompt"] };
+  | { type: "trustPrompt"; value: State["trustPrompt"] }
+  | { type: "selfUpdateInfo"; info: SelfUpdateInfo }
+  | { type: "selfUpdateProgress"; progress: SelfUpdateProgress | null };
 
 const MAX_LOG_LINES = 5000;
 let toastSeq = 0;
@@ -279,6 +296,10 @@ function reducer(state: State, action: Action): State {
       return { ...state, signIn: { ...state.signIn, ...action.patch } };
     case "trustPrompt":
       return { ...state, trustPrompt: action.value };
+    case "selfUpdateInfo":
+      return { ...state, selfUpdate: action.info };
+    case "selfUpdateProgress":
+      return { ...state, selfUpdateProgress: action.progress };
     default:
       return state;
   }
@@ -327,6 +348,9 @@ export interface Actions {
 
   notify(toast: Toast): void;
   dismissToast(id: number): void;
+
+  checkSelfUpdate(): Promise<void>;
+  installSelfUpdate(): Promise<void>;
 }
 
 const StateContext = createContext<State>(initialState);
@@ -733,6 +757,28 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       dismissToast(id) {
         dispatch({ type: "dismissToast", id });
       },
+
+      async checkSelfUpdate() {
+        try {
+          const info = await koa.checkSelfUpdate();
+          dispatch({ type: "selfUpdateInfo", info });
+        } catch {
+          // Best-effort: koa's own update check never blocks anything else.
+        }
+      },
+
+      async installSelfUpdate() {
+        dispatch({
+          type: "selfUpdateProgress",
+          progress: { stage: "resolving", done: 0, total: 0, error: "" },
+        });
+        try {
+          await koa.selfUpdate();
+        } catch (err) {
+          dispatch({ type: "selfUpdateProgress", progress: null });
+          notify({ kind: "error", message: errorMessage(err) });
+        }
+      },
     };
   }, [
     loadAppDetail,
@@ -758,6 +804,12 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         }
         if (boot.account.signedIn) {
           await Promise.all([refreshDiscovery(true), loadApps(), loadProcesses()]);
+        }
+        try {
+          const info = await koa.checkSelfUpdate();
+          if (!cancelled) dispatch({ type: "selfUpdateInfo", info });
+        } catch {
+          // Best-effort: koa's own update check never blocks startup.
         }
       } catch (err) {
         if (!cancelled) dispatch({ type: "fatal", message: errorMessage(err) });
@@ -798,6 +850,22 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         dispatch({ type: "logLine", id, line }),
       ),
       on<Toast>(EVENT.toast, (toast) => dispatch({ type: "toast", toast })),
+      on<SelfUpdateProgress>(EVENT.selfUpdate, (progress) => {
+        if (progress.stage === "available") {
+          void koa
+            .selfUpdateStatus()
+            .then((info) => dispatch({ type: "selfUpdateInfo", info }))
+            .catch(() => {});
+          return;
+        }
+        dispatch({ type: "selfUpdateProgress", progress });
+        if (progress.stage === "failed") {
+          dispatch({
+            type: "toast",
+            toast: { kind: "error", message: progress.error || "koa update failed." },
+          });
+        }
+      }),
     ];
     return () => offs.forEach((off) => off());
   }, [loadApps, refreshDiscovery]);

@@ -77,3 +77,21 @@ Device Flow needs an OAuth App Client ID, which is a manual prerequisite
 (PRD §19). Set `KOA_GITHUB_CLIENT_ID` in the environment or bake it in with
 `-ldflags "-X main.githubClientID=…"`. Without one, koa still works through
 Settings › *Enter token*.
+
+## Self-update
+
+koa checks its own latest release against `main.selfUpdateRepo`
+(`-ldflags "-X main.selfUpdateRepo=owner/koa"`, or `KOA_SELF_UPDATE_REPO` in
+the environment) and, when newer, lets the user trigger an in-app update from
+Settings. `release.yml` injects the repo that actually built the binary
+(`github.repository`), so a fork self-updates from itself. Unset — the
+default for a plain local build — disables the feature entirely; so does a
+`dev` version string. See `internal/app/selfupdate.go` and PRD §17.
+
+## Branch protection & releases
+
+`main` is protected (PR + passing `ci` required, no approvals required, no
+force-push/deletion). `tag-release.yml` auto-bumps the patch version and tags
+every non-docs merge to `main`; that tag push triggers `release.yml`, which
+builds and publishes. Don't hand-push tags — let `tag-release` own
+versioning, or the next auto-bump will collide with a manually chosen one.

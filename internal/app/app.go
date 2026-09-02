@@ -7,6 +7,7 @@ import (
 	"os"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/playdead/koa/internal/assetmatch"
@@ -80,6 +81,17 @@ type Service struct {
 
 	// startupError is surfaced once in Bootstrap.
 	startupError string
+
+	// selfUpdateOwner/selfUpdateName identify koa's own repository, so it can
+	// check and install its own releases the same way it does for any other
+	// koa-tagged repo. Both are empty when the running build has no
+	// configured self-update target, which disables the feature entirely.
+	selfUpdateOwner string
+	selfUpdateName  string
+
+	selfUpdateMu   sync.RWMutex
+	selfUpdateInfo SelfUpdateInfo
+	selfUpdating   atomic.Bool
 }
 
 // Options configures a Service.
@@ -87,6 +99,9 @@ type Options struct {
 	Version  string
 	ClientID string
 	Paths    config.Paths
+	// SelfUpdateRepo is koa's own "owner/repo" coordinate, used to check and
+	// install koa's own releases. Empty disables self-update.
+	SelfUpdateRepo string
 }
 
 // New wires the service together. It loads state and any stored credential,
@@ -102,6 +117,7 @@ func New(opts Options) (*Service, error) {
 	}
 
 	gh := ghapi.New("")
+	selfOwner, selfName := parseSelfUpdateRepo(opts.SelfUpdateRepo)
 	s := &Service{
 		version: opts.Version,
 		paths:   opts.Paths,
@@ -114,6 +130,9 @@ func New(opts Options) (*Service, error) {
 		host:    noopHost{},
 
 		releaseCache: map[string]cachedRelease{},
+
+		selfUpdateOwner: selfOwner,
+		selfUpdateName:  selfName,
 	}
 	s.procs = runner.NewManager(func(event string, data any) { s.emit(event, data) })
 
@@ -129,7 +148,9 @@ func (s *Service) start(ctx context.Context, host Host) {
 	s.hostMu.Unlock()
 
 	s.install.Sweep()
+	sweepSelfUpdateLeftover()
 	go s.ensurePath()
+	go s.watchSelfUpdate(s.ctx)
 }
 
 // stop halts every child process so koa leaves nothing orphaned.

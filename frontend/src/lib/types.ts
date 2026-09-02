@@ -184,6 +184,21 @@ export interface Toast {
   message: string;
 }
 
+export interface SelfUpdateInfo {
+  available: boolean;
+  current: string;
+  latest: string;
+  publishedAt: string;
+  url: string;
+}
+
+export interface SelfUpdateProgress {
+  stage: string;
+  done: number;
+  total: number;
+  error: string;
+}
+
 export const EVENT = {
   auth: "koa:auth",
   install: "koa:install",
@@ -191,4 +206,5 @@ export const EVENT = {
   log: "koa:log",
   process: "koa:process",
   toast: "koa:toast",
+  selfUpdate: "koa:selfupdate",
 } as const;

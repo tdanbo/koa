@@ -29,15 +29,19 @@ var assets embed.FS
 //go:embed build/tray-dark.png build/tray-light.png build/tray-dark.ico build/tray-light.ico
 var icons embed.FS
 
-// version and githubClientID are set at build time:
+// version, githubClientID and selfUpdateRepo are set at build time:
 //
-//	go build -ldflags "-X main.version=1.0.0 -X main.githubClientID=Iv1..."
+//	go build -ldflags "-X main.version=1.0.0 -X main.githubClientID=Iv1... -X main.selfUpdateRepo=owner/koa"
 //
 // The Client ID is safe to embed: Device Flow uses no client secret, and koa is
-// open source (PRD §7).
+// open source (PRD §7). selfUpdateRepo is the "owner/repo" koa checks and
+// installs its own releases from; the release workflow injects the repo that
+// actually built the binary, so a fork self-updates from itself rather than
+// upstream.
 var (
 	version        = "dev"
 	githubClientID = ""
+	selfUpdateRepo = ""
 )
 
 // windowBackground matches the reference's window surface so there is no flash
@@ -51,9 +55,10 @@ func main() {
 	}
 
 	service, err := app.New(app.Options{
-		Version:  version,
-		ClientID: clientID(),
-		Paths:    paths,
+		Version:        version,
+		ClientID:       clientID(),
+		Paths:          paths,
+		SelfUpdateRepo: selfUpdateRepoValue(),
 	})
 	if err != nil {
 		log.Fatalf("koa: %v", err)
@@ -100,6 +105,15 @@ func clientID() string {
 		return fromEnv
 	}
 	return strings.TrimSpace(githubClientID)
+}
+
+// selfUpdateRepoValue prefers the environment, so a developer can point a
+// local build at a fork's releases without rebuilding.
+func selfUpdateRepoValue() string {
+	if fromEnv := strings.TrimSpace(os.Getenv("KOA_SELF_UPDATE_REPO")); fromEnv != "" {
+		return fromEnv
+	}
+	return strings.TrimSpace(selfUpdateRepo)
 }
 
 // Koa is the API surface bound to the frontend. Only the service's methods are

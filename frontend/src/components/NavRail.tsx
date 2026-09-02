@@ -11,7 +11,7 @@ type NavKey = "discover" | "installed" | "running" | "settings";
  * Installed active, so the rail always names where you are.
  */
 export function NavRail() {
-  const { view, account, processes } = useStore();
+  const { view, account, processes, selfUpdate } = useStore();
   const actions = useActions();
   const collapsed = useMediaQuery(railCollapseQuery);
 
@@ -73,6 +73,14 @@ export function NavRail() {
           active={active === "settings"}
           collapsed={collapsed}
           onClick={actions.goSettings}
+          trailing={
+            selfUpdate.available ? (
+              <span
+                title={`koa ${selfUpdate.latest} is available`}
+                className="size-[5px] rounded-full bg-amber"
+              />
+            ) : null
+          }
         />
       </div>
 

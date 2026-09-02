@@ -1,0 +1,52 @@
+# Cuts a new release automatically every time a PR merges to main. Runs after
+# main's branch protection has already required the "ci" workflow to pass, so
+# by the time this fires the merge is known-good.
+#
+# It only tags — the actual build and publish is release.yml, triggered by
+# the tag push below. Version bumps are a simple auto-incremented patch
+# (vX.Y.Z -> vX.Y.(Z+1)); there is no conventional-commit parsing, so every
+# qualifying merge is one new patch release. Docs-only changes are skipped
+# (see paths-ignore) so editing the PRD or README doesn't cut a release.
+name: tag release
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "PRD/**"
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Compute next version
+        id: version
+        run: |
+          latest=$(git tag --list 'v*' --sort=-v:refname | head -n1)
+          if [ -z "$latest" ]; then
+            next="v1.0.0"
+          else
+            version="${latest#v}"
+            major="${version%%.*}"
+            rest="${version#*.}"
+            minor="${rest%%.*}"
+            patch="${rest#*.}"
+            next="v${major}.${minor}.$((patch + 1))"
+          fi
+          echo "latest=$latest" >> "$GITHUB_OUTPUT"
+          echo "next=$next" >> "$GITHUB_OUTPUT"
+
+      - name: Tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${{ steps.version.outputs.next }}" -m "${{ steps.version.outputs.next }}"
+          git push origin "${{ steps.version.outputs.next }}"

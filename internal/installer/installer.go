@@ -76,8 +76,20 @@ type Result struct {
 	PublishedAt time.Time
 }
 
-// Install runs the whole pipeline for one request.
+// Install runs the whole pipeline for one request, writing the binary into
+// the koa bin folder under its clean command name.
 func (i *Installer) Install(ctx context.Context, req Request, onProgress Progress) (Result, error) {
+	return i.installTo(ctx, req, i.paths.BinaryPath(req.Repo), onProgress)
+}
+
+// InstallAt behaves like Install but writes the binary to dest instead of the
+// koa bin folder. This is how koa updates its own running executable, which
+// may live anywhere on disk depending on how it was originally installed.
+func (i *Installer) InstallAt(ctx context.Context, req Request, dest string, onProgress Progress) (Result, error) {
+	return i.installTo(ctx, req, dest, onProgress)
+}
+
+func (i *Installer) installTo(ctx context.Context, req Request, dest string, onProgress Progress) (Result, error) {
 	report := func(stage Stage, done, total int64) {
 		if onProgress != nil {
 			onProgress(stage, done, total)
@@ -131,7 +143,6 @@ func (i *Installer) Install(ctx context.Context, req Request, onProgress Progres
 	}
 
 	report(StageInstalling, 0, 0)
-	dest := i.paths.BinaryPath(req.Repo)
 	if err := placeBinary(staged, dest); err != nil {
 		return Result{}, err
 	}

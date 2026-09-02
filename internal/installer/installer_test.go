@@ -291,6 +291,36 @@ func TestInstallReplacesExistingBinary(t *testing.T) {
 	}
 }
 
+func TestInstallAtWritesToExplicitDestination(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("covered on unix")
+	}
+	inst, _ := fixture(t, "linux", map[string][]byte{
+		"dumpscope-1.0.0-amd64-linux.tar.gz": makeTarGz(t, map[string]string{"dumpscope": binaryBody}),
+	})
+
+	dest := filepath.Join(t.TempDir(), "dumpscope")
+	if err := os.WriteFile(dest, []byte("old dumpscope"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+
+	res, err := inst.InstallAt(context.Background(), Request{Owner: "playdead", Repo: "dumpscope"}, dest, nil)
+	if err != nil {
+		t.Fatalf("InstallAt: %v", err)
+	}
+	if res.BinaryPath != dest {
+		t.Errorf("binary path = %q, want %q", res.BinaryPath, dest)
+	}
+	got, err := os.ReadFile(dest)
+	if err != nil || string(got) != binaryBody {
+		t.Fatalf("dest not replaced: %q (err %v)", got, err)
+	}
+	// The koa bin folder must stay untouched — InstallAt bypasses it entirely.
+	if _, err := os.Stat(filepath.Join(inst.paths.BinDir, "dumpscope")); err == nil {
+		t.Error("InstallAt should not also write into the koa bin folder")
+	}
+}
+
 func TestRemoveBinaryIsIdempotent(t *testing.T) {
 	inst, paths := fixture(t, "linux", nil)
 	dest := paths.BinaryPath("dumpscope")

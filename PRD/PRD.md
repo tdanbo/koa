@@ -31,7 +31,6 @@ Explicitly out of scope — call these out if asked, don't build them:
 - Package formats beyond raw binaries, `.tar.gz`, and `.zip` — no `.deb`/`.rpm`/`.msi`/installers.
 - Keeping multiple installed versions side-by-side on disk — only one "current" version per app at a time (see §10 for how rollback still works without this).
 - A GitHub App / fine-grained per-repo installation flow — v1 uses an OAuth App with Device Flow (see §7). Worth revisiting later if precise per-repo scoping becomes important.
-- Self-updating koa from inside its own UI — koa's own updates are handled via re-running the install script (§17) for now.
 
 ## 4. Tech Stack
 
@@ -197,6 +196,13 @@ The reference does not cover these — resolve them consistent with its language
 - Document this install command prominently in the koa repo's README.
 - **Windows note:** `curl | sh` is inherently a Unix-shell pattern and primarily covers Linux. A comparable Windows one-liner (e.g. `irm .../install.ps1 | iex`) is a reasonable fast-follow, not required for v1 — Windows users can download the release directly from GitHub in the meantime.
 
+### Self-Update
+
+- koa checks its own latest GitHub release in the background — once shortly after launch, then on a slow interval for as long as it stays open — and compares the tag against the running build. Dev builds (no embedded version) never check.
+- When a newer release exists, the UI surfaces it without interrupting anything: a small indicator next to Settings in the nav rail, plus a banner in Settings naming the version and offering an **Update now** action. The user decides when to act; koa never installs a self-update without an explicit click.
+- Clicking Update now downloads the release asset matching koa's own naming convention (§9), replaces koa's own running executable in place — reusing the same match/download/extract pipeline as installing any other koa-tagged repo, just writing to koa's own binary location instead of the koa bin folder — then relaunches. A failure at any stage (no matching asset, network error, relaunch failure after a successful swap) is surfaced as a clear message rather than left silent.
+- This is the primary way koa updates itself going forward. The install script (above) remains a valid fallback — for a first install, or on a platform/location where koa cannot write to its own executable.
+
 ## 18. Security Notes
 
 - Since koa installs and runs third-party binaries surfaced via a public GitHub topic convention, include a brief, visible reminder in the UI (e.g. on first install) that users should only install repos they trust.
@@ -214,4 +220,3 @@ The reference does not cover these — resolve them consistent with its language
 - Per-org filtering in Discover (currently: always search every org the user belongs to).
 - Checksum/signature verification.
 - Windows install script parity.
-- koa self-update from within its own UI.

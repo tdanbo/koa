@@ -2,7 +2,7 @@
 #
 # koa installer.
 #
-#   curl -fsSL https://raw.githubusercontent.com/playdead/koa/main/install.sh | sh
+#   curl -fsSL https://raw.githubusercontent.com/tdanbo/koa/main/install.sh | sh
 #
 # Downloads the latest koa release from GitHub and installs the binary. koa
 # dogfoods its own naming convention, so the asset it looks for is exactly the
@@ -11,7 +11,7 @@
 #   koa-{version}-amd64-linux.tar.gz
 #
 # Environment:
-#   KOA_REPO         owner/name to install from       (default playdead/koa)
+#   KOA_REPO         owner/name to install from       (default tdanbo/koa)
 #   KOA_VERSION      release tag to install           (default: latest)
 #   KOA_INSTALL_DIR  where to place the binary        (default: ~/.local/bin)
 #   GITHUB_TOKEN     token for private repos / higher rate limits
@@ -22,7 +22,7 @@
 
 set -eu
 
-REPO="${KOA_REPO:-playdead/koa}"
+REPO="${KOA_REPO:-tdanbo/koa}"
 VERSION="${KOA_VERSION:-}"
 INSTALL_DIR="${KOA_INSTALL_DIR:-$HOME/.local/bin}"
 API="${KOA_API:-https://api.github.com}/repos/$REPO"

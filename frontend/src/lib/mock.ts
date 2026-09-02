@@ -17,6 +17,7 @@ import type {
   PathState,
   Process,
   Repo,
+  SelfUpdateInfo,
   Settings,
   Version,
 } from "./types";
@@ -366,6 +367,16 @@ const bootstrap: Bootstrap = {
   startupError: "",
 };
 
+// koa's own update banner, illustrated the same way the reference illustrates
+// a per-app update: sample data only, never shipped.
+let selfUpdate: SelfUpdateInfo = {
+  available: true,
+  current: bootstrap.version,
+  latest: "0.2.0",
+  publishedAt: ago(60 * 24),
+  url: "https://github.com/tdanbo/koa/releases/tag/v0.2.0",
+};
+
 const handlers: Record<string, (...args: unknown[]) => Promise<unknown>> = {
   Bootstrap: async () => ({ ...bootstrap, settings }),
 
@@ -572,6 +583,27 @@ const handlers: Record<string, (...args: unknown[]) => Promise<unknown>> = {
   SignInWithToken: async () => account,
   SignOut: async () => undefined,
   RefreshAccount: async () => account,
+
+  CheckSelfUpdate: async () => {
+    await delay(150);
+    return selfUpdate;
+  },
+  SelfUpdateStatus: async () => selfUpdate,
+  SelfUpdate: async () => {
+    const total = 9_500_000;
+    for (const stage of ["resolving", "downloading", "extracting", "installing", "relaunching"]) {
+      if (stage === "downloading") {
+        for (const fraction of [0.3, 0.7, 1]) {
+          emit("koa:selfupdate", { stage, done: Math.round(total * fraction), total, error: "" });
+          await delay(150);
+        }
+        continue;
+      }
+      emit("koa:selfupdate", { stage, done: 0, total: 0, error: "" });
+      await delay(200);
+    }
+    selfUpdate = { ...selfUpdate, available: false, current: selfUpdate.latest };
+  },
 };
 
 /** renderMarkdown is a deliberately small stand-in for the Go renderer. */

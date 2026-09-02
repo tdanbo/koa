@@ -219,10 +219,11 @@ type LogLine = runner.Line
 
 // Event names emitted to the frontend.
 const (
-	EventAuth    = "koa:auth"
-	EventInstall = "koa:install"
-	EventApps    = "koa:apps"
-	EventToast   = "koa:toast"
+	EventAuth       = "koa:auth"
+	EventInstall    = "koa:install"
+	EventApps       = "koa:apps"
+	EventToast      = "koa:toast"
+	EventSelfUpdate = "koa:selfupdate"
 )
 
 // Toast is a transient message shown for background outcomes such as an
