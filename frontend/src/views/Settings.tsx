@@ -31,7 +31,7 @@ export function SettingsView() {
     <div className="flex flex-col gap-5 px-6 pt-6 pb-10">
       {account.usingPlaintextFallback ? (
         <Banner title="Token stored in a plaintext file">
-          No OS keyring was available, so koa saved your GitHub token to{" "}
+          No OS keyring was available, so Koa saved your GitHub token to{" "}
           <Mono>{account.plaintextPath}</Mono> with owner-only permissions. Install a
           Secret Service provider (for example gnome-keyring) and sign in again to move
           it into the keyring.
@@ -40,7 +40,7 @@ export function SettingsView() {
 
       {selfUpdate.available ? (
         <Banner
-          title={`koa ${selfUpdate.latest} is available`}
+          title={`Koa ${selfUpdate.latest} is available`}
           action={
             <Button
               variant="primary"
@@ -52,17 +52,17 @@ export function SettingsView() {
           }
         >
           You're on <Mono>{boot?.version}</Mono>. Updating downloads the release
-          asset, replaces this binary, and restarts koa.
+          asset, replaces this binary, and restarts Koa.
         </Banner>
       ) : null}
 
       {!path.onPath ? (
         <Banner
-          title="koa bin folder is not on your PATH"
+          title="Koa bin folder is not on your PATH"
           action={<Button onClick={() => void actions.ensurePath()}>Add to PATH</Button>}
         >
           Installed binaries live in <Mono>{boot?.binDir}</Mono>. Until it is on PATH,
-          they run only from inside koa. {path.detail ? `Currently ${path.detail}.` : ""}
+          they run only from inside Koa. {path.detail ? `Currently ${path.detail}.` : ""}
         </Banner>
       ) : null}
 
@@ -114,7 +114,7 @@ export function SettingsView() {
             <div className="text-value text-title">Organizations to search</div>
             <div className="mt-1 max-w-[60ch] text-control leading-[1.55] text-faded">
               GitHub's org-membership endpoint returns nothing for fine-grained tokens
-              by design, so name the organizations koa should search. Comma separated.
+              by design, so name the organizations Koa should search. Comma separated.
             </div>
             <div className="mt-3 flex items-center gap-[9px]">
               <input
@@ -171,7 +171,7 @@ export function SettingsView() {
           <div>
             <div className="text-value text-title">Minimize to tray on close</div>
             <div className="mt-1 text-control text-label">
-              Closing the window hides koa instead of quitting.
+              Closing the window hides Koa instead of quitting.
             </div>
           </div>
           <Toggle
@@ -194,7 +194,7 @@ export function SettingsView() {
       <Card className="px-6 py-5">
         <SectionLabel>Asset convention</SectionLabel>
         <div className="pt-4 text-copy leading-[1.6] text-faded">
-          koa installs a release asset only when its filename follows{" "}
+          Koa installs a release asset only when its filename follows{" "}
           <Mono className="text-secondary">{boot?.assetPattern}</Mono>. Repositories
           that publish nothing matching are shown as Incompatible.
         </div>
@@ -205,7 +205,7 @@ export function SettingsView() {
         <div className="flex items-center justify-between gap-6 pt-4">
           <div>
             <div className="text-value text-title">
-              koa <Mono>{boot?.version}</Mono>
+              Koa <Mono>{boot?.version}</Mono>
             </div>
             <div className="mt-1 text-control text-label">
               {selfUpdate.available
@@ -220,7 +220,7 @@ export function SettingsView() {
       </Card>
 
       <p className="max-w-[70ch] text-control leading-[1.65] text-faint">
-        koa installs and runs third-party binaries published by repositories you have
+        Koa installs and runs third-party binaries published by repositories you have
         access to. Only install repositories you trust.
       </p>
     </div>
@@ -256,7 +256,7 @@ function TokenForm() {
         <div className="mt-3 text-control text-clay-strong">{signIn.error}</div>
       ) : null}
       <div className="mt-3 max-w-[64ch] text-control leading-[1.55] text-faint">
-        koa validates the token with one lightweight API call before storing it.
+        Koa validates the token with one lightweight API call before storing it.
       </div>
     </div>
   );

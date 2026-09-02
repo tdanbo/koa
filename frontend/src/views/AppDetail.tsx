@@ -108,7 +108,7 @@ export function AppDetailView({
             </Button>
           }
         >
-          koa tracks this app but <Mono>{app.binaryPath}</Mono> is not on disk.
+          Koa tracks this app but <Mono>{app.binaryPath}</Mono> is not on disk.
         </Banner>
       ) : null}
 

@@ -183,7 +183,7 @@ func (s *Service) context() context.Context {
 // failure for the Bootstrap banner (PRD §6).
 func (s *Service) ensurePath() {
 	if _, err := ensurePathOnDisk(s.paths.BinDir); err != nil {
-		s.startupError = fmt.Sprintf("koa could not add %s to your PATH: %v", config.Display(s.paths.BinDir), err)
+		s.startupError = fmt.Sprintf("Koa could not add %s to your PATH: %v", config.Display(s.paths.BinDir), err)
 	}
 }
 
@@ -192,7 +192,7 @@ func (s *Service) loadStoredCredential() {
 	cred, err := s.creds.Load()
 	if err != nil {
 		if !errors.Is(err, auth.ErrNoCredential) {
-			s.startupError = fmt.Sprintf("koa could not read the stored GitHub token: %v", err)
+			s.startupError = fmt.Sprintf("Koa could not read the stored GitHub token: %v", err)
 		}
 		return
 	}

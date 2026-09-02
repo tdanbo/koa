@@ -31,7 +31,7 @@ export function SignInView() {
           <div className="mt-5">
             <Banner title="Device Flow is not configured in this build">
               No OAuth App Client ID was compiled in. Set{" "}
-              <Mono>KOA_GITHUB_CLIENT_ID</Mono> before launching koa, or paste a token
+              <Mono>KOA_GITHUB_CLIENT_ID</Mono> before launching Koa, or paste a token
               below.
             </Banner>
           </div>
@@ -47,8 +47,8 @@ export function SignInView() {
             </div>
             <div className="mt-4 max-w-[62ch] text-copy leading-[1.6] text-faded">
               {prompt.browserOpened
-                ? "Your browser is open at github.com — enter the code there to approve koa."
-                : "Open the link below and enter the code to approve koa."}
+                ? "Your browser is open at github.com — enter the code there to approve Koa."
+                : "Open the link below and enter the code to approve Koa."}
             </div>
             <div className="mt-4 flex items-center gap-[9px]">
               <Button onClick={() => actions.openExternal(prompt.verificationUri)}>
@@ -66,6 +66,11 @@ export function SignInView() {
               variant="primary"
               size="md"
               disabled={signIn.pending || !boot?.deviceFlowReady}
+              title={
+                boot?.deviceFlowReady
+                  ? undefined
+                  : "Device Flow needs an OAuth App Client ID — see the banner above, or use a token instead."
+              }
               onClick={() => void actions.signInWithGitHub()}
             >
               {signIn.pending ? "Contacting GitHub…" : "Sign in with GitHub"}

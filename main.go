@@ -29,6 +29,9 @@ var assets embed.FS
 //go:embed build/tray-dark.png build/tray-light.png build/tray-dark.ico build/tray-light.ico
 var icons embed.FS
 
+//go:embed build/appicon.png
+var appIconPNG []byte
+
 // version, githubClientID and selfUpdateRepo are set at build time:
 //
 //	go build -ldflags "-X main.version=1.0.0 -X main.githubClientID=Iv1... -X main.selfUpdateRepo=owner/koa"
@@ -49,6 +52,8 @@ var (
 var windowBackground = &options.RGBA{R: 0x0d, G: 0x0e, B: 0x0f, A: 255}
 
 func main() {
+	preventDoubleDecorations()
+
 	paths, err := config.Resolve()
 	if err != nil {
 		log.Fatalf("koa: %v", err)
@@ -70,7 +75,7 @@ func main() {
 	windowAPI := &Window{desktop: desktop}
 
 	err = wails.Run(&options.App{
-		Title:  "koa",
+		Title:  "Koa",
 		Width:  1180,
 		Height: 760,
 		// The reference's three-band layout needs room; below this the rail
@@ -89,6 +94,7 @@ func main() {
 			WindowIsTranslucent:  false,
 		},
 		Linux: &linux.Options{
+			Icon:                appIconPNG,
 			WindowIsTranslucent: false,
 			ProgramName:         "koa",
 		},
@@ -133,8 +139,8 @@ func (d *desktop) startup(ctx context.Context) {
 	d.ctx = ctx
 	d.shell.Startup(ctx, &wailsHost{ctx: ctx})
 	d.tray = tray.Start(tray.Options{
-		Title:          "koa",
-		Tooltip:        "koa " + d.shell.AppVersion(),
+		Title:          "Koa",
+		Tooltip:        "Koa " + d.shell.AppVersion(),
 		Icons:          loadIcons(),
 		OnOpen:         d.show,
 		OnCheckUpdates: d.checkUpdatesFromTray,

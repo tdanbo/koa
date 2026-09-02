@@ -22,7 +22,7 @@ export function InstalledView() {
           title="Nothing installed"
           action={<Button onClick={actions.goDiscover}>Browse Discover</Button>}
         >
-          Apps you install land in your koa bin folder and appear here.
+          Apps you install land in your Koa bin folder and appear here.
         </EmptyState>
       </div>
     );

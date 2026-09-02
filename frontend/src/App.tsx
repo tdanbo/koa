@@ -40,7 +40,7 @@ export function App() {
     return (
       <Shell>
         <div className="flex flex-1 items-center justify-center">
-          <LoadingLine>Starting koa…</LoadingLine>
+          <LoadingLine>Starting Koa…</LoadingLine>
         </div>
       </Shell>
     );
@@ -51,7 +51,7 @@ export function App() {
       <Shell>
         <div className="flex flex-1 items-center justify-center px-10">
           <div className="max-w-[60ch] border border-clay-border bg-clay-fill px-6 py-5">
-            <div className="text-copy text-clay-strong">koa could not start</div>
+            <div className="text-copy text-clay-strong">Koa could not start</div>
             <div className="mt-2 text-control leading-[1.6] text-faded">{state.fatal}</div>
           </div>
         </div>
@@ -144,8 +144,8 @@ function buildChrome(
     case "signin":
       return {
         title: "Sign in",
-        footerLeft: "Discover stays empty until koa knows whose repositories to list.",
-        footerRight: `koa ${version}`,
+        footerLeft: "Discover stays empty until Koa knows whose repositories to list.",
+        footerRight: `Koa ${version}`,
       };
 
     case "discover": {
@@ -221,7 +221,7 @@ function buildChrome(
       return {
         title: "Running",
         actions: <RunningActions />,
-        footerLeft: `${plural(processes.filter((p) => p.running).length, "process")} running · output streams into koa, not a terminal window.`,
+        footerLeft: `${plural(processes.filter((p) => p.running).length, "process")} running · output streams into Koa, not a terminal window.`,
         footerRight: <RunningMeta />,
       };
 
@@ -231,11 +231,11 @@ function buildChrome(
         footerLeft: `State in ${boot?.stateFile ?? ""}${
           account.signedIn ? ` · token in ${account.tokenStorage}` : ""
         }.`,
-        footerRight: `koa ${version}`,
+        footerRight: `Koa ${version}`,
       };
 
     default:
-      return { title: "koa", footerLeft: "", footerRight: `koa ${version}` };
+      return { title: "Koa", footerLeft: "", footerRight: `Koa ${version}` };
   }
 }
 

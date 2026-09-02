@@ -456,7 +456,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         const app = await koa.install(owner, name, tag);
         notify({
           kind: "success",
-          message: `${app.name} ${app.version} installed to your koa bin folder.`,
+          message: `${app.name} ${app.version} installed to your Koa bin folder.`,
         });
         await loadApps();
         await refreshDiscovery(false);
@@ -735,7 +735,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         try {
           const path = await koa.ensurePath();
           dispatch({ type: "path", path });
-          notify({ kind: path.onPath || path.persisted ? "success" : "warning", message: `koa bin folder ${path.detail}.` });
+          notify({ kind: path.onPath || path.persisted ? "success" : "warning", message: `Koa bin folder ${path.detail}.` });
         } catch (err) {
           notify({ kind: "error", message: errorMessage(err) });
         }
@@ -862,7 +862,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
         if (progress.stage === "failed") {
           dispatch({
             type: "toast",
-            toast: { kind: "error", message: progress.error || "koa update failed." },
+            toast: { kind: "error", message: progress.error || "Koa update failed." },
           });
         }
       }),

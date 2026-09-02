@@ -58,10 +58,10 @@ func Start(opts Options) *Tray {
 		systray.SetTooltip(opts.Tooltip)
 		t.applyIcon(dark)
 
-		open := systray.AddMenuItem("Open koa", "Bring the koa window to the front")
+		open := systray.AddMenuItem("Open Koa", "Bring the Koa window to the front")
 		check := systray.AddMenuItem("Check for updates", "Check every installed app for a newer release")
 		systray.AddSeparator()
-		quit := systray.AddMenuItem("Quit", "Exit koa")
+		quit := systray.AddMenuItem("Quit", "Exit Koa")
 
 		go func() {
 			for {

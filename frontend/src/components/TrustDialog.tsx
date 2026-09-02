@@ -24,7 +24,7 @@ export function TrustDialog() {
           Before you install
         </div>
         <p className="mt-4 text-value leading-[1.65] text-secondary">
-          koa downloads and runs binaries published by repositories you have access
+          Koa downloads and runs binaries published by repositories you have access
           to. It does not verify checksums or signatures. Only install repositories
           you trust.
         </p>
