@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { ContentHeader, StatusFooter } from "./components/Chrome";
 import { NavRail } from "./components/NavRail";
+import { ResizeHandles } from "./components/ResizeHandles";
 import { TitleBar } from "./components/TitleBar";
 import { Toasts } from "./components/Toasts";
 import { TrustDialog } from "./components/TrustDialog";
@@ -92,7 +93,8 @@ export function App() {
 
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="flex h-full w-full flex-col overflow-hidden border border-edge-control bg-window">
+    <div className="relative flex h-full w-full flex-col overflow-hidden border border-edge-control bg-window">
+      <ResizeHandles />
       <TitleBar />
       {children}
     </div>

@@ -75,6 +75,13 @@ export const MaximiseGlyph = () => (
   </svg>
 );
 
+export const RestoreGlyph = () => (
+  <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth={1} aria-hidden="true">
+    <path d="M2.5 0.5h7v7h-2" />
+    <rect x="0.5" y="2.5" width="7" height="7" />
+  </svg>
+);
+
 export const CloseGlyph = () => (
   <svg width="10" height="10" viewBox="0 0 10 10" stroke="currentColor" strokeWidth={1} aria-hidden="true">
     <path d="M0 0l10 10M10 0L0 10" />
