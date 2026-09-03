@@ -183,3 +183,19 @@ func IncompatibleReason(repo, goos, tag string) string {
 	}
 	return fmt.Sprintf("No release asset matches %s. Latest release %s publishes no compatible binary.", Pattern(repo, goos), tag)
 }
+
+// NoReleaseReason is the sentence shown when a koa-tagged repo has not
+// published anything koa can see yet (§5.3, §8, §9). It spells out the two
+// requirements maintainers most often miss: koa follows GitHub's own
+// definition of "latest," which skips drafts and pre-releases, and the asset
+// naming convention itself.
+func NoReleaseReason(repo, goos string) string {
+	example := strings.Replace(Pattern(repo, goos), "{version}", "1.0.0", 1)
+	return fmt.Sprintf(
+		"This repository carries the koa topic but has no release koa can install yet. "+
+			"Publish a GitHub Release — not a draft, and not marked as a pre-release, since koa "+
+			"only ever looks at the repository's latest release — with a binary asset named %s "+
+			"(e.g. %s).",
+		Pattern(repo, goos), example,
+	)
+}
