@@ -194,7 +194,7 @@ The reference does not cover these — resolve them consistent with its language
 - Provide a one-line install command in the style of `curl -fsSL https://raw.githubusercontent.com/{org}/koa/main/install.sh | sh`, with `install.sh` committed to and served from the koa repo itself.
 - Script responsibilities: detect OS, fetch koa's own latest release from GitHub, download the asset matching koa's own naming convention (§9 — koa should dogfood its own convention), extract, and place the binary appropriately for the platform.
 - Document this install command prominently in the koa repo's README.
-- **Windows note:** `curl | sh` is inherently a Unix-shell pattern and primarily covers Linux. A comparable Windows one-liner (e.g. `irm .../install.ps1 | iex`) is a reasonable fast-follow, not required for v1 — Windows users can download the release directly from GitHub in the meantime.
+- **Windows:** `curl | sh` is inherently a Unix-shell pattern, so Windows gets its own `install.ps1`, run as `irm https://raw.githubusercontent.com/{org}/koa/main/install.ps1 | iex`. Same responsibilities as above — resolve the release, download `koa-{version}-amd64-windows.zip`, place `koa.exe` under `%LOCALAPPDATA%\Programs\koa` by default, and tell the user how to add it to `PATH` if it isn't there yet. `irm | iex` cannot take script parameters, so like `install.sh` it takes all configuration through the same environment variables (`KOA_REPO`, `KOA_VERSION`, `KOA_INSTALL_DIR`, `GITHUB_TOKEN`, `KOA_API`).
 
 ### Self-Update
 
@@ -211,7 +211,7 @@ The reference does not cover these — resolve them consistent with its language
 ## 19. Prerequisites (manual, not built by the agent)
 
 - Register a GitHub OAuth App (github.com → Developer settings), enable Device Flow, and obtain the Client ID to embed in the app.
-- Publish `install.sh` in the koa repo and link it from the README.
+- Publish `install.sh` and `install.ps1` in the koa repo and link both from the README.
 
 ## 20. Deferred / Future Enhancements
 
@@ -219,4 +219,3 @@ The reference does not cover these — resolve them consistent with its language
 - GitHub App–based fine-grained, per-repo token scoping (as an alternative/addition to Device Flow).
 - Per-org filtering in Discover (currently: always search every org the user belongs to).
 - Checksum/signature verification.
-- Windows install script parity.

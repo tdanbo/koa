@@ -17,8 +17,8 @@
 #   GITHUB_TOKEN     token for private repos / higher rate limits
 #   KOA_API          GitHub API root                 (default api.github.com)
 #
-# Windows is not covered: `curl | sh` is a Unix pattern. Download the .zip from
-# the releases page instead (PRD §17).
+# Windows is not covered: `curl | sh` is a Unix pattern. Use install.ps1
+# instead (PRD §17).
 
 set -eu
 
