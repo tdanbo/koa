@@ -155,7 +155,14 @@ function buildChrome(
       const orgCount = Math.max(0, (data?.scopes.length ?? 1) - 1);
       return {
         title: "Discover",
-        actions: <FilterField />,
+        actions: (
+          <>
+            <FilterField />
+            <Button disabled={discovery.loading} onClick={() => void actions.refreshDiscovery(true)}>
+              {discovery.loading ? "Refreshing…" : "Refresh"}
+            </Button>
+          </>
+        ),
         footerLeft: data
           ? `Repositories tagged koa across your account and ${plural(orgCount, "organization")}.`
           : "Repositories tagged koa across your account and organizations.",
