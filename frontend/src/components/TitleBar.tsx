@@ -1,11 +1,25 @@
+import { useEffect, useState } from "react";
+
 import { win } from "../lib/bridge";
-import { CloseGlyph, MaximiseGlyph, MinimiseGlyph } from "./icons";
+import { CloseGlyph, MaximiseGlyph, MinimiseGlyph, RestoreGlyph } from "./icons";
 
 /**
  * The 32px frameless title bar from PRD §5.2. koa draws its own chrome, so the
  * bar is the window's drag handle and the three controls are 46px hit targets.
  */
 export function TitleBar() {
+  const [maximised, setMaximised] = useState(false);
+
+  useEffect(() => {
+    // No maximise/restore event exists to subscribe to, so re-check on every
+    // resize — that covers the button, WM snapping, and double-clicking the
+    // bar alike, since all of them change the window's size.
+    const sync = () => void window.runtime?.WindowIsMaximised().then(setMaximised);
+    sync();
+    window.addEventListener("resize", sync);
+    return () => window.removeEventListener("resize", sync);
+  }, []);
+
   return (
     <div className="drag-window flex h-titlebar shrink-0 items-stretch justify-between border-b border-edge bg-titlebar">
       <div className="flex items-center gap-[9px] pl-3">
@@ -19,8 +33,11 @@ export function TitleBar() {
         <ChromeButton label="Minimise" onClick={() => void win.minimise()}>
           <MinimiseGlyph />
         </ChromeButton>
-        <ChromeButton label="Maximise" onClick={() => void win.toggleMaximise()}>
-          <MaximiseGlyph />
+        <ChromeButton
+          label={maximised ? "Restore" : "Maximise"}
+          onClick={() => void win.toggleMaximise()}
+        >
+          {maximised ? <RestoreGlyph /> : <MaximiseGlyph />}
         </ChromeButton>
         <ChromeButton label="Close" danger onClick={() => void win.close()}>
           <CloseGlyph />

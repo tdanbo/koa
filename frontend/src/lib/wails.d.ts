@@ -12,6 +12,9 @@ declare global {
         Window?: Record<string, (...args: unknown[]) => Promise<unknown>>;
       };
     };
+    /** Wails' raw message channel to the shell — used directly by the edge
+     * resize handles, since "resize:<edge>" has no typed runtime wrapper. */
+    WailsInvoke?: (message: string) => void;
     runtime?: {
       EventsOn(event: string, callback: (...data: unknown[]) => void): () => void;
       EventsOff(event: string): void;
