@@ -19,24 +19,32 @@ Platforms: **Windows** and **Linux**, amd64.
 
 ## Install koa
 
+**Linux:**
+
 ```sh
 curl -fsSL https://raw.githubusercontent.com/tdanbo/koa/main/install.sh | sh
 ```
 
-The script detects your OS, fetches koa's latest release, downloads the asset
-matching koa's own naming convention, and installs the binary to
-`~/.local/bin`. Override anything you need:
+Detects your OS, fetches koa's latest release, downloads the asset matching
+koa's own naming convention, and installs the binary to `~/.local/bin`.
+
+**Windows:**
+
+```powershell
+irm https://raw.githubusercontent.com/tdanbo/koa/main/install.ps1 | iex
+```
+
+Same idea, installing to `%LOCALAPPDATA%\Programs\koa` and printing the
+command to add it to your `PATH` if it isn't already there.
+
+Both scripts read the same environment variables:
 
 | Variable | Purpose | Default |
 |---|---|---|
-| `KOA_INSTALL_DIR` | Where the binary is placed | `~/.local/bin` |
+| `KOA_INSTALL_DIR` | Where the binary is placed | `~/.local/bin` (Linux) / `%LOCALAPPDATA%\Programs\koa` (Windows) |
 | `KOA_VERSION` | Install a specific tag | latest release |
 | `KOA_REPO` | Install from a fork | `tdanbo/koa` |
 | `GITHUB_TOKEN` | Private repos, higher rate limits | unset |
-
-**Windows:** `curl | sh` is a Unix pattern, so there is no one-liner yet.
-Download the `.zip` from the releases page and unpack it. A PowerShell
-equivalent (`irm … | iex`) is a planned follow-up.
 
 koa checks its own latest release in the background and, when a newer one
 exists, shows an indicator next to Settings and a banner offering **Update

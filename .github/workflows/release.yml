@@ -1,6 +1,7 @@
 # Builds koa for Linux and Windows and attaches the assets to the release,
 # named exactly as koa's own convention requires (see README, §9). This is what
-# makes `install.sh` and koa's Discover view able to install koa itself.
+# makes `install.sh`, `install.ps1`, and koa's Discover view able to install
+# koa itself.
 name: release
 
 on:
