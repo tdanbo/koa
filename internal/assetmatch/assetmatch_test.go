@@ -1,6 +1,9 @@
 package assetmatch
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestMatchForLinux(t *testing.T) {
 	cases := []struct {
@@ -85,6 +88,20 @@ func TestPattern(t *testing.T) {
 	}
 	if got := Pattern("myapp", "linux"); got != "myapp-{version}-amd64-linux.tar.gz" {
 		t.Fatalf("linux pattern = %q", got)
+	}
+}
+
+func TestNoReleaseReasonNamesPatternAndExample(t *testing.T) {
+	got := NoReleaseReason("myapp", "linux")
+	for _, want := range []string{
+		"myapp-{version}-amd64-linux.tar.gz",
+		"myapp-1.0.0-amd64-linux.tar.gz",
+		"pre-release",
+		"draft",
+	} {
+		if !strings.Contains(got, want) {
+			t.Fatalf("NoReleaseReason() = %q, want it to mention %q", got, want)
+		}
 	}
 }
 

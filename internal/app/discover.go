@@ -232,7 +232,7 @@ func (s *Service) repoView(ctx context.Context, repo ghapi.Repo, account Account
 	case errors.Is(err, ghapi.ErrNoReleases):
 		view.Status = "No releases"
 		view.StatusKind = StatusNoRelease
-		view.IncompatibleReason = "This repository carries the koa topic but has not published a release yet."
+		view.IncompatibleReason = assetmatch.NoReleaseReason(repo.Name, runtime.GOOS)
 		if isInstalled {
 			applyInstalledStatus(&view, installed)
 		}
